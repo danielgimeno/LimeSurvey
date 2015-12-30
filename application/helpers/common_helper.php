@@ -1444,6 +1444,7 @@ function getExtendedAnswer($iSurveyID, $sFieldCode, $sValue, $sLanguage)
                 }
                 break;
             case 'N':
+            case 'K':
                 if (trim($sValue)!='')
                 {
                     if(strpos($sValue,".")!==false)
