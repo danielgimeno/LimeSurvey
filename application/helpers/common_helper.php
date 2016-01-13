@@ -1411,6 +1411,39 @@ function sendCacheHeaders()
 /**
 * @param integer $iSurveyID The Survey ID
 * @param string $sFieldCode Field code of the particular field
+* @param string $value The stored response value
+* @param string $sLanguage Initialized limesurvey_lang object for the resulting response data
+* @return string
+*/
+function cleanNumericTypedValues ($iSurveyID, $sFieldCode, $value, $sLanguage )
+{
+    if ($value==null || $value=='') return '';
+    $fieldmap = createFieldMap($iSurveyID,'short',false,false,$sLanguage);
+    if (isset($fieldmap[$sFieldCode])){
+        $fields = $fieldmap[$sFieldCode];
+    }
+    $this_type = $fields['type'];
+    if ($this_type == 'K' || $this_type == 'N'){
+            if (trim($value)!='')
+            {
+                if(strpos($value,".")!==false)
+                {
+                    $value=rtrim(rtrim($value,"0"),".");
+                }
+                $qidattributes = getQuestionAttributeValues($fields['qid']);
+                if($qidattributes['num_value_int_only'])
+                {
+                    $value=number_format($value, 0, '', '');
+                }
+            }
+    }
+    return $value;
+}
+
+
+/**
+* @param integer $iSurveyID The Survey ID
+* @param string $sFieldCode Field code of the particular field
 * @param string $sValue The stored response value
 * @param string $sLanguage Initialized limesurvey_lang object for the resulting response data
 * @return string
