@@ -427,6 +427,25 @@ class SurveyAdmin extends Survey_Common_Action
             $aData['failedgroupcheck'] = $failedgroupcheck;
             $aData['aSurveysettings'] = getSurveyInfo($iSurveyID);
 
+            if (empty($_POST['activate'])){
+                $survey = Survey::model()->findByAttributes(array('sid' => $iSurveyID));
+
+                $todayDate = new DateTime('now');
+                $surveyExpireDate = new DateTime($survey->expires);
+                $surveyStartDate = new DateTime($survey->startdate);            
+
+                if ($todayDate < $surveyStartDate || $todayDate > $surveyExpireDate){
+
+                    $aViewUrls['output'] = "<div class='messagebox ui-corner-all'><div class='warningheader'>".gT("This Survey is outdated. Would like to change the survey settings?")."</div>";    
+                    $aViewUrls['output'] .= "Follow this link to update it: <a href='".Yii::app()->getController()->createUrl("admin/survey?sa=editsurveysettings&surveyid=".$iSurveyID."#publication")."'>Survey Settings [".$aData['aSurveysettings']['surveyls_title'].": ".$iSurveyID."]</a>";
+
+                    $aViewUrls['output'].= "<div class='warningheader'><input type='submit' value='".gT("Activate anyway")."' onclick=\"".convertGETtoPOST(Yii::app()->getController()->createUrl("admin/survey/sa/activate/surveyid/".$iSurveyID)."?activate=1")."\" /></div>";
+                    $aViewUrls['output'].= "</div>";
+                    $this->_renderWrappedTemplate('survey', $aViewUrls, $aData);
+                    return;
+                }
+            }
+            
             $this->_renderWrappedTemplate('survey', 'activateSurvey_view', $aData);
         }
         else
@@ -488,8 +507,7 @@ class SurveyAdmin extends Survey_Common_Action
                 }
                 $aViewUrls['output'] .= "</div><br />&nbsp;\n";
             }
-
-
+            
             $this->_renderWrappedTemplate('survey', $aViewUrls, $aData);
         }
     }
