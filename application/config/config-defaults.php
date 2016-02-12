@@ -655,5 +655,8 @@ $config['boxes_by_row'] = '3';
 $config['boxes_offset'] = '3';
 
 
+// Set default value to allow save incomplete survey.
+$config['defaultAllowSave'] ='N';
+
 return $config;
 //settings deleted
