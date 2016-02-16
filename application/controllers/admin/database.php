@@ -276,7 +276,6 @@ class database extends Survey_Common_Action
 
                         if (substr($subquestionkey,0,3)!='new')           //update record
                         {
-                            //var_dump($subquestionkey); die();
                             $oSubQuestion=Question::model()->find("qid=:qid AND language=:language",array(":qid"=>$subquestionkey,':language'=>$sLanguage));
                             if(!is_object($oSubQuestion))
                             {
@@ -410,7 +409,7 @@ class database extends Survey_Common_Action
             if ($survey->active !== 'N')
             {
                 Yii::app()->setFlashMessage(gT("You can't insert a new question when the survey is active."),'error');
-                $this->getController()->redirect(array("/admin/survey/sa/view/surveyid/" . $survey->sid), "refresh");
+                $this->getController()->redirect(array("/admin/survey/sa/view/surveyid/".$survey->sid), "refresh");
             }
 
             if (strlen(Yii::app()->request->getPost('title')) < 1)
@@ -421,14 +420,8 @@ class database extends Survey_Common_Action
             {
 
                 // For Bootstrap Version usin YiiWheels switch :
-                if( Yii::app()->request->getPost('mandatory') == '1' || Yii::app()->request->getPost('mandatory') == '0' )
-                {
-                    $_POST['mandatory'] = ( Yii::app()->request->getPost('mandatory') == '1' ) ? 'Y' : 'N' ;
-                }
-                else
-                {
-                    $_POST['mandatory'] = Yii::app()->request->getPost('mandatory');
-                }
+                $_POST['mandatory'] = ( Yii::app()->request->getPost('mandatory') == '1' ) ? 'Y' : 'N' ;
+                $_POST['other'] = ( Yii::app()->request->getPost('other') == '1' ) ? 'Y' : 'N' ;
 
                 if (Yii::app()->request->getPost('questionposition',"")!="")
                 {
@@ -458,14 +451,8 @@ class database extends Survey_Common_Action
                 $oQuestion->other = Yii::app()->request->getPost('other');
 
                 // For Bootstrap Version usin YiiWheels switch :
-                if( Yii::app()->request->getPost('mandatory') == '1' || Yii::app()->request->getPost('mandatory') == '0' )
-                {
-                    $oQuestion->mandatory = ( Yii::app()->request->getPost('mandatory') == '1' ) ? 'Y' : 'N' ;
-                }
-                else
-                {
-                    $oQuestion->mandatory = Yii::app()->request->getPost('mandatory');
-                }
+                $oQuestion->mandatory = ( Yii::app()->request->getPost('mandatory') == '1' ) ? 'Y' : 'N' ;
+                $oQuestion->other = ( Yii::app()->request->getPost('other') == '1' ) ? 'Y' : 'N' ;
 
 
                 $oQuestion->relevance = Yii::app()->request->getPost('relevance');
@@ -878,14 +865,8 @@ class database extends Survey_Common_Action
 
 
             // For Bootstrap Version usin YiiWheels switch :
-            if( Yii::app()->request->getPost('mandatory') == '1' || Yii::app()->request->getPost('mandatory') == '0' )
-            {
-                $_POST['mandatory'] = ( Yii::app()->request->getPost('mandatory') == '1' ) ? 'Y' : 'N' ;
-            }
-            else
-            {
-                $_POST['mandatory'] = Yii::app()->request->getPost('mandatory');
-            }
+            $_POST['mandatory'] = ( Yii::app()->request->getPost('mandatory') == '1' ) ? 'Y' : 'N' ;
+            $_POST['other'] = ( Yii::app()->request->getPost('other') == '1' ) ? 'Y' : 'N' ;
 
             // These are the questions types that have no mandatory property - so zap it accordingly
             if (Yii::app()->request->getPost('type')== "X" || Yii::app()->request->getPost('type')== "|")
@@ -978,11 +959,10 @@ class database extends Survey_Common_Action
                             //$condn = array('sid' => $surveyid, 'qid' => $qid, 'language' => $qlang);
                             $oQuestion = Question::model()->findByPk(array("qid"=>$iQuestionID,'language'=>$qlang));
 
-
-
-
                             foreach ($udata as $k => $v)
+                            {
                                 $oQuestion->$k = $v;
+                            }
 
                             $uqresult = $oQuestion->save();//($uqquery); // or safeDie ("Error Update Question: ".$uqquery."<br />");  // Checked)
                             if (!$uqresult)
@@ -1202,16 +1182,19 @@ class database extends Survey_Common_Action
             $oSurvey->admin =  Yii::app()->request->getPost('admin');
             $oSurvey->expires =  $expires;
             $oSurvey->startdate =  $startdate;
-            $oSurvey->anonymized = App()->request->getPost('anonymized');
             $oSurvey->faxto = App()->request->getPost('faxto');
             $oSurvey->format = App()->request->getPost('format');
-            $oSurvey->savetimings = App()->request->getPost('savetimings');
             $oSurvey->template = Yii::app()->request->getPost('template');
             $oSurvey->assessments = App()->request->getPost('assessments');
             $oSurvey->additional_languages =  Yii::app()->request->getPost('languageids');
-            $oSurvey->datestamp = App()->request->getPost('datestamp');
-            $oSurvey->ipaddr = App()->request->getPost('ipaddr');
-            $oSurvey->refurl = App()->request->getPost('refurl');
+            if ($oSurvey->active!='Y')
+            {
+                $oSurvey->anonymized = App()->request->getPost('anonymized');
+                $oSurvey->savetimings = App()->request->getPost('savetimings');
+                $oSurvey->datestamp = App()->request->getPost('datestamp');
+                $oSurvey->ipaddr = App()->request->getPost('ipaddr');
+                $oSurvey->refurl = App()->request->getPost('refurl');
+            }
             $oSurvey->publicgraphs = App()->request->getPost('publicgraphs');
             $oSurvey->usecookie = App()->request->getPost('usecookie');
             $oSurvey->allowregister = App()->request->getPost('allowregister');
@@ -1340,8 +1323,8 @@ class database extends Survey_Common_Action
     * $defaultvalue is empty then the entry is removed from table defaultvalues
     *
     * @param mixed $qid   Question ID
-    * @param mixed $scale_id  Scale ID
-    * @param mixed $specialtype  Special type (i.e. for  'Other')
+    * @param integer $scale_id  Scale ID
+    * @param string $specialtype  Special type (i.e. for  'Other')
     * @param mixed $language     Language (defaults are language specific)
     * @param mixed $defaultvalue    The default value itself
     * @param boolean $ispost   If defaultvalue is from a $_POST set this to true to properly quote things

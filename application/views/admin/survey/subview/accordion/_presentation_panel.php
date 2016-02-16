@@ -117,9 +117,9 @@
 
             <?php
                 $data = array(
-                    0 => gT('Disabled'),
-                    1 => gT('Incremental'),
-                    2 => gT('Full')
+                    0 => gT('Disabled','unescaped'),
+                    1 => gT('Incremental','unescaped'),
+                    2 => gT('Full','unescaped')
                 );
                 echo CHtml::dropDownList('questionindex', $esrow['questionindex'], $data, array(
                     'id' => 'questionindex',
@@ -262,7 +262,7 @@
 
                 <!-- Show "There are X questions in this survey -->
                 <div class="form-group">
-                    <label class="col-sm-4 control-label" for="dis_showxquestions"><?php  eT('Show "There are X questions in this survey:"'); ?></label>
+                    <label class="col-sm-4 control-label" for="dis_showxquestions"><?php  eT('Show "There are X questions in this survey":'); ?></label>
                     <div class="col-sm-8">
                         <input type="hidden" class="form-control"  name="showxquestions" id="" value="Y" /> <input type="text" name="dis_showxquestions" id="dis_showxquestions" disabled="disabled" value="<?php  eT('Yes (Forced by the system administrator)'); ?>" />
                     </div>

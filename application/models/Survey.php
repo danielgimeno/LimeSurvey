@@ -481,6 +481,43 @@ class Survey extends LSActiveRecord
                 Yii::app()->db->createCommand()->dropTable("{{tokens_".intval($iSurveyID)."}}");
             }
 
+            /* Remove User/global settings part : need Question and QuestionGroup*/
+            // Settings specific for this survey
+            $oCriteria = new CDbCriteria();
+            $oCriteria->compare('stg_name','last_%',true,'AND',false);
+            $oCriteria->compare('stg_value',$iSurveyID,false,'AND');
+            SettingGlobal::model()->deleteAll($oCriteria);
+            // Settings specific for this survey, 2nd part
+            $oCriteria = new CDbCriteria();
+            $oCriteria->compare('stg_name','last_%'.$iSurveyID.'%',true,'AND',false);
+            SettingGlobal::model()->deleteAll($oCriteria);
+            // All Group id from this survey for ALL users
+            $aGroupId=CHtml::listData(QuestionGroup::model()->findAll(array('select'=>'gid','condition'=>'sid=:sid','params'=>array(':sid'=>$iSurveyID))),'gid','gid');
+            $oCriteria = new CDbCriteria();
+            $oCriteria->compare('stg_name','last_question_gid_%',true,'AND',false);
+            if(Yii::app()->db->getDriverName() == 'pgsql') // pgsql need casting, unsure for mssql
+            {
+                $oCriteria->addInCondition('CAST(stg_value as '.App()->db->schema->getColumnType("integer").')',$aGroupId);
+            }
+            else //mysql App()->db->schema->getColumnType("integer") give int(11), mssql seems to have issue if cast alpha to numeric
+            {
+                $oCriteria->addInCondition('stg_value',$aGroupId);
+            }
+            SettingGlobal::model()->deleteAll($oCriteria);
+            // All Question id from this survey for ALL users
+            $aQuestionId=CHtml::listData(Question::model()->findAll(array('select'=>'qid','condition'=>'sid=:sid','params'=>array(':sid'=>$iSurveyID))),'qid','qid');
+            $oCriteria = new CDbCriteria();
+            $oCriteria->compare('stg_name','last_question_%',true,'OR',false);
+            if(Yii::app()->db->getDriverName() == 'pgsql')
+            {
+                $oCriteria->addInCondition('CAST(stg_value as '.App()->db->schema->getColumnType("integer").')',$aQuestionId);
+            }
+            else
+            {
+                $oCriteria->addInCondition('stg_value',$aQuestionId);
+            }
+            SettingGlobal::model()->deleteAll($oCriteria);
+
             $oResult = Question::model()->findAllByAttributes(array('sid' => $iSurveyID));
             foreach ($oResult as $aRow)
             {
@@ -734,20 +771,37 @@ class Survey extends LSActiveRecord
 
         $criteria = new CDbCriteria;
 
-        // select
+        // Answers
         $criteria->select = array(
             '*',
             $this->getCountFullAnswers() . " as full_answers_account",
             $this->getCountPartialAnswers() . " as partial_answers_account",
         );
 
+        $criteria->join  = 'LEFT JOIN {{surveys_languagesettings}} AS surveys_languagesettings ON ( surveys_languagesettings.surveyls_language = t.language AND t.sid = surveys_languagesettings.surveyls_survey_id )';
+        $criteria->join .= 'LEFT JOIN {{users}} AS users ON ( users.uid = t.owner_id )';
 
-        $criteria->join  ='LEFT JOIN {{surveys_languagesettings}} AS surveys_languagesettings ON ( surveys_languagesettings.surveyls_language = t.language AND t.sid = surveys_languagesettings.surveyls_survey_id )';
-        $criteria->join .='LEFT JOIN {{users}} AS users ON ( users.uid = t.owner_id )';
-        $criteria->compare('t.active', $this->active, true, 'AND');
-        $criteria->compare('surveys_languagesettings.surveyls_title', $this->searched_value, true, 'AND');
-        $criteria->compare('t.admin', $this->searched_value, true, 'OR');
+        // Permission
+        if(!Permission::model()->hasGlobalPermission("surveys",'read'))
+        {
+            $criteria->join .= "LEFT JOIN {{permissions}} AS permissions ON ( permissions.entity_id=t.sid AND permissions.entity='survey' AND permissions.permission='surveycontent' AND permissions.uid=:userid  ) ";
+            $criteria->condition = 'permissions.read_p=1';
+            $criteria->params=(array(':userid'=>Yii::app()->user->id ));
+        }
+        // Search filter
+        $criteria2 = new CDbCriteria;
+        $sid_reference = (Yii::app()->db->getDriverName() == 'pgsql' ?' t.sid::varchar' : 't.sid');
+        $criteria2->compare($sid_reference, $this->searched_value, true, 'OR');
+        $criteria2->compare('surveys_languagesettings.surveyls_title', $this->searched_value, true, 'OR');
+        $criteria2->compare('t.admin', $this->searched_value, true, 'OR');
 
+        // Active filter
+        if(isset($this->active))
+        {
+            $criteria->addCondition("t.active='$this->active'");
+        }
+
+        $criteria->mergeWith($criteria2, 'AND');
 
         $dataProvider=new CActiveDataProvider('Survey', array(
             'sort'=>$sort,

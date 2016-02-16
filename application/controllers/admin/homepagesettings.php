@@ -1,4 +1,19 @@
 <?php
+/*
+* LimeSurvey
+* Copyright (C) 2007-2011 The LimeSurvey Project Team / Carsten Schmitz
+* All rights reserved.
+* License: GNU/GPL License v2 or later, see LICENSE.php
+* LimeSurvey is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+* See COPYRIGHT.php for copyright notices and details.
+*
+* Home Page boxes can respect user permissions.
+* To that goal, create user groups corresponding (like 'administrator', 'publisher', 'templateeditor') related to the permissions
+* Inspired by ACL pattern, see : https://en.wikipedia.org/wiki/Access_control_list
+*/
 
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
@@ -30,7 +45,6 @@ class homepagesettings extends Survey_Common_Action
     public function create()
     {
         $model=new Boxes;
-
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -39,7 +53,12 @@ class homepagesettings extends Survey_Common_Action
             $model->attributes=$_POST['Boxes'];
             if($model->save())
             {
+                Yii::app()->user->setFlash('success', gT('New box created'));
                 $this->getController()->redirect(array('admin/homepagesettings'));
+            }
+            else
+            {
+                Yii::app()->user->setFlash('error', gT('Could not create new box'));
             }
         }
 
@@ -66,10 +85,16 @@ class homepagesettings extends Survey_Common_Action
             $model->attributes=$_POST['Boxes'];
             if($model->save())
             {
+                Yii::app()->user->setFlash('success', gT('Box updated'));
+
                 if (isset($_POST['saveandclose']))
                 {
                     $this->getController()->redirect(array('admin/homepagesettings','id'=>$model->id));
                 }
+            }
+            else
+            {
+                Yii::app()->user->setFlash('error', gT('Could not update box'));
             }
         }
 
@@ -87,10 +112,13 @@ class homepagesettings extends Survey_Common_Action
     public function delete($id)
     {
         $this->loadModel($id)->delete();
+        Yii::app()->user->setFlash('success', gT('Box deleted'));
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if(!isset($_GET['ajax']))
-            $this->getController()->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+        {
+            $this->getController()->redirect(array('admin/homepagesettings'));
+        }
     }
 
     /**
@@ -98,7 +126,6 @@ class homepagesettings extends Survey_Common_Action
      */
     public function index()
     {
-        App()->getClientScript()->registerScriptFile( App()->getAssetManager()->publish( ADMIN_SCRIPT_PATH . 'homepagesettings.js' ));        
         $dataProvider=new CActiveDataProvider('Boxes');
         $aData = array(
             'dataProvider'=>$dataProvider,
@@ -145,7 +172,12 @@ class homepagesettings extends Survey_Common_Action
      */
     public function toggleShowLogoStatus()
     {
-
+        if ( Permission::model()->hasGlobalPermission('settings', 'update') )
+        {
+            $bNewShowLogo = (getGlobalSetting('show_logo')=="show")?"hide":"show";
+            setGlobalSetting('show_logo', $bNewShowLogo);
+            echo $bNewShowLogo;
+        }
     }
 
     /**
@@ -153,15 +185,98 @@ class homepagesettings extends Survey_Common_Action
      */
     public function toggleShowLastSurveyAndQuestion()
     {
-
+        if ( Permission::model()->hasGlobalPermission('settings', 'update') )
+        {
+            $bNewShowLastSurveyAndQuestion = (getGlobalSetting('show_last_survey_and_question')=="show")?"hide":"show";
+            setGlobalSetting('show_last_survey_and_question', $bNewShowLastSurveyAndQuestion);
+            echo $bNewShowLastSurveyAndQuestion;
+        }
     }
 
     /**
      * Performs the AJAX update of box setting
      */
-    public function setBoxesSettings()
+    public function setBoxesSettings($boxesbyrow, $boxesoffset)
     {
+        if ( Permission::model()->hasGlobalPermission('settings', 'update') )
+        {
+            setGlobalSetting('boxes_by_row', $boxesbyrow);
+            setGlobalSetting('boxes_offset', $boxesoffset);
+            return true;
+        }
+    }
 
+    public function resetall()
+    {
+        if ( Permission::model()->hasGlobalPermission('settings', 'update') )
+        {
+
+            // We delete all the old boxes, and reinsert new ones
+            Boxes::model()->deleteAll();
+
+            // Then we recreate them
+            $oDB = Yii::app()->db;
+            $oDB->createCommand()->insert('{{boxes}}', array(
+                'position' =>  '1',
+                'url'      => 'admin/survey/sa/newsurvey' ,
+                'title'    => 'Create survey' ,
+                'ico'      => 'add' ,
+                'desc'     => 'Create a new survey' ,
+                'page'     => 'welcome',
+                'usergroup' => '-2',
+            ));
+
+            $oDB->createCommand()->insert('{{boxes}}', array(
+                'position' =>  '2',
+                'url'      =>  'admin/survey/sa/listsurveys',
+                'title'    =>  'List surveys',
+                'ico'      =>  'list',
+                'desc'     =>  'List available surveys',
+                'page'     =>  'welcome',
+                'usergroup' => '-1',
+            ));
+
+            $oDB->createCommand()->insert('{{boxes}}', array(
+                'position' =>  '3',
+                'url'      =>  'admin/globalsettings',
+                'title'    =>  'Global settings',
+                'ico'      =>  'global',
+                'desc'     =>  'Edit global settings',
+                'page'     =>  'welcome',
+                'usergroup' => '-2',
+            ));
+
+            $oDB->createCommand()->insert('{{boxes}}', array(
+                'position' =>  '4',
+                'url'      =>  'admin/update',
+                'title'    =>  'ComfortUpdate',
+                'ico'      =>  'shield',
+                'desc'     =>  'Stay safe and up to date',
+                'page'     =>  'welcome',
+                'usergroup' => '-2',
+            ));
+
+            $oDB->createCommand()->insert('{{boxes}}', array(
+                'position' =>  '5',
+                'url'      =>  'admin/labels/sa/view',
+                'title'    =>  'Label sets',
+                'ico'      =>  'labels',
+                'desc'     =>  'Edit label sets',
+                'page'     =>  'welcome',
+                'usergroup' => '-2',
+            ));
+
+            $oDB->createCommand()->insert('{{boxes}}', array(
+                'position' =>  '6',
+                'url'      =>  'admin/templates/sa/view',
+                'title'    =>  'Template editor',
+                'ico'      =>  'templates',
+                'desc'     =>  'Edit LimeSurvey templates',
+                'page'     =>  'welcome',
+                'usergroup' => '-2',
+            ));
+        }
+        $this->getController()->redirect(array('admin/homepagesettings'));
     }
 
     /**
@@ -186,6 +301,7 @@ class homepagesettings extends Survey_Common_Action
     */
     protected function _renderWrappedTemplate($sAction = '', $aViewUrls = array(), $aData = array())
     {
+        App()->getClientScript()->registerScriptFile( App()->getAssetManager()->publish( ADMIN_SCRIPT_PATH . 'homepagesettings.js' ));
         parent::_renderWrappedTemplate($sAction, $aViewUrls, $aData);
     }
 

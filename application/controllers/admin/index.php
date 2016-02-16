@@ -51,23 +51,29 @@ class Index extends Survey_Common_Action
         // the sid of this question : last_question_sid_1
         $setting_entry = 'last_question_sid_'.Yii::app()->user->getId();
         $lastquestionsid = getGlobalSetting($setting_entry);
-
-        if( $lastquestion != null && $lastquestiongroup != null && $survey)
+        $survey = Survey::model()->findByPk($lastquestionsid);
+        if( $lastquestion && $lastquestiongroup && $survey)
         {
+
             $baselang = $survey->language;
             $aData['showLastQuestion'] = true;
             $qid = $lastquestion;
             $gid = $lastquestiongroup;
             $sid = $lastquestionsid;
             $qrrow = Question::model()->findByAttributes(array('qid' => $qid, 'gid' => $gid, 'sid' => $sid, 'language' => $baselang));
-
-            $aData['last_question_name'] = $qrrow['title'];
-            if($qrrow['question'])
+            if($qrrow)
             {
-                $aData['last_question_name'] .= ' : '.$qrrow['question'];
+                $aData['last_question_name'] = $qrrow['title'];
+                if($qrrow['question'])
+                {
+                    $aData['last_question_name'] .= ' : '.$qrrow['question'];
+                }
+                $aData['last_question_link'] = $this->getController()->createUrl("admin/questions/sa/view/surveyid/$sid/gid/$gid/qid/$qid");
             }
-
-            $aData['last_question_link'] = $this->getController()->createUrl("admin/questions/sa/view/surveyid/$iSurveyID/gid/$gid/qid/$qid");
+            else
+            {
+                $aData['showLastQuestion'] = false;
+            }
         }
         else
         {

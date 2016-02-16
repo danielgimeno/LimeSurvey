@@ -56,9 +56,9 @@ function eT($sToTranslate, $sEscapeMode = 'html', $sLanguage = NULL)
  * @param integer $iCount
  * @param string $sEscapeMode
  */
-function ngT($sToTranslate, $iCount, $sEscapeMode = 'html')
+function ngT($sTextToTranslate, $iCount, $sEscapeMode = 'html')
 {
-    return quoteText(Yii::t('',$sToTranslate,$iCount),$sEscapeMode);
+    return quoteText(Yii::t('',$sTextToTranslate,$iCount),$sEscapeMode);
 }
 
 /**
@@ -67,7 +67,7 @@ function ngT($sToTranslate, $iCount, $sEscapeMode = 'html')
  * @param integer $iCount
  * @param string $sEscapeMode
  */
-function egT($sToTranslate, $iCount, $sEscapeMode = 'html')
+function neT($sToTranslate, $iCount, $sEscapeMode = 'html')
 {
     echo ngT($sToTranslate,$iCount,$sEscapeMode);
 }
@@ -216,7 +216,18 @@ function getSurveyList($returnarray=false, $surveyid=false)
         $surveynames = array();
         foreach ($surveyidresult as $result)
         {
-            $surveynames[] = array_merge($result->attributes, $result->defaultlanguage->attributes);
+            if(!empty($result->defaultlanguage))
+            {
+                $surveynames[] = array_merge($result->attributes, $result->defaultlanguage->attributes);
+            }
+            elseif(empty($bCheckIntegrity))
+            {
+                $bCheckIntegrity=true;
+                Yii::app()->setFlashMessage(
+                    CHtml::link(gT("One or more surveys seem to be broken, please check data integrity of the LimeSurvey database."),array("admin/checkintegrity"))
+                    ,
+                    'error');
+            }
         }
 
         $cached = $surveynames;

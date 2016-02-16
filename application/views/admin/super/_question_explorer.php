@@ -42,7 +42,7 @@
                                     title="<?php eT('Add a group');?>"
                                     class="" href="<?php echo $this->createUrl("/admin/questiongroups/sa/add/surveyid/$iSurveyId"); ?>">
                                     <span class="glyphicon glyphicon-plus-sign"></span>
-                                    ADD GROUP
+                                    <?php eT('Add group');?>
                                 </a>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                             <div class="row explorer-group-title">
                                 <div class="col-sm-8">
                                     <a href="#" data-question-group-id="<?php echo $aGroup->gid; ?>" class="explorer-group">
-                                        <span id="caret-<?php echo $aGroup->gid; ?>" class="fa fa-caret-right caret-explorer-group"></span>&nbsp&nbsp<?php echo $aGroup->group_name;?>
+                                        <span id="caret-<?php echo $aGroup->gid; ?>" class="fa fa-caret-right caret-explorer-group"></span>&nbsp;&nbsp;<?php echo $aGroup->group_name;?>
                                     </a>
                                 </div>
 

@@ -43,7 +43,7 @@
                                     </select>
                             </div>
 
-                            <?php echo CHtml::submitButton(gT('Search'), array('class'=>'btn btn-success')); ?>
+                            <?php echo CHtml::submitButton(gT('Search','unescaped'), array('class'=>'btn btn-success')); ?>
                             <a href="<?php echo Yii::app()->createUrl('admin/survey/sa/listquestions/surveyid/'.$surveyid);?>" class="btn btn-warning"><?php eT('Reset');?></a>
 
                         <?php $this->endWidget(); ?>
@@ -63,7 +63,7 @@
                         'id' => 'question-grid',
                         'type'=>'striped',
 
-                        
+
                         'summaryText'=>gT('Displaying {start}-{end} of {count} result(s).') .' '.sprintf(gT('%s rows per page'),
                             CHtml::dropDownList(
                                 'pageSize',
@@ -85,7 +85,7 @@
                                         'htmlOptions' => array('class' => 'col-md-2 hidden-xs'),
                                     ),
                                     array(
-                                        'header' => gt('Title'),
+                                        'header' => gt('Code'),
                                         'name' => 'title',
                                         'value'=>'$data->title',
                                         'htmlOptions' => array('class' => 'col-xs-1'),

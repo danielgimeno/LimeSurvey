@@ -31,6 +31,7 @@ class Boxes extends CActiveRecord
         return array(
             array('url, title, ico, desc, page', 'required'),
             array('position', 'numerical', 'integerOnly'=>true),
+            array('usergroup', 'numerical', 'integerOnly'=>true, 'min'=>-2),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('id, position, url, title, ico, desc, page, usergroup', 'safe', 'on'=>'search'),
@@ -55,13 +56,13 @@ class Boxes extends CActiveRecord
     {
         return array(
             'id' => 'ID',
-            'position' => 'position of the box',
-            'url' => 'url that the box points',
-            'title' => 'title of the box',
-            'ico' => 'icon to use in the box (you can use font-awesome, bootstrap glyphicons, or limesurvey icons)',
-            'desc' => 'description of the box',
-            'page' => 'name of the page where the box should be shown ',
-            'usergroup'=> 'those boxes will be shown for that user group'
+            'position' => gT('Position:'),
+            'url' => gT('Destination URL:'),
+            'title' => gT('Title:'),
+            'ico' => gT('Icon:'),
+            'desc' => gT('Description:'),
+            'page' => gT('Name of the page where the box should be shown'),
+            'usergroup'=> gT('Display this box to:')
         );
     }
 
@@ -105,9 +106,19 @@ class Boxes extends CActiveRecord
     public function getUsergroupname()
     {
         $usergroupid = $this->usergroup;
-        if(empty($usergroupid) || $usergroupid==0)
+
+        // Can't use switch because of empty case
+        if ( empty($usergroupid) || $usergroupid=='-2'  )
         {
-            return gT('anybody');
+            return gT('Only Superadmin');
+        }
+        elseif ( $usergroupid=='-1' )
+        {
+            return gT('Everybody');
+        }
+        elseif ( $usergroupid=='-3' )
+        {
+            return gT('Nobody');
         }
         else
         {
@@ -115,7 +126,7 @@ class Boxes extends CActiveRecord
 
             // The group doesn't exist anymore
             if(!is_object($oUsergroup))
-                return gT('nobody');
+                return gT("Can't find user group!");
 
             return $oUsergroup->name;
         }
@@ -127,30 +138,84 @@ class Boxes extends CActiveRecord
         $url = Yii::app()->createUrl("/admin/homepagesettings/sa/update/id/");
         $url .= '/'.$this->id;
         $button = '<a class="btn btn-default" href="'.$url.'" role="button"><span class="glyphicon glyphicon-pencil" ></span></a>';
-/*
-        $previewUrl = Yii::app()->createUrl("survey/index/action/previewquestion/sid/");
-        $previewUrl .= '/'.$this->sid.'/gid/'.$this->gid.'/qid/'.$this->qid;
 
-        $editurl = Yii::app()->createUrl("admin/questions/sa/editquestion/surveyid/$this->sid/gid/$this->gid/qid/$this->qid");
-
-        $button = '<a class="btn btn-default open-preview"  data-toggle="tooltip" title="'.gT("Question preview").'"  aria-data-url="'.$previewUrl.'" aria-data-sid="'.$this->sid.'" aria-data-gid="'.$this->gid.'" aria-data-qid="'.$this->qid.'" aria-data-language="'.$this->language.'" href="# role="button" ><span class="glyphicon glyphicon-eye-open"  ></span></a> ';
-        $button .= '<a class="btn btn-default"  data-toggle="tooltip" title="'.gT("Edit question").'" href="'.$editurl.'" role="button"><span class="glyphicon glyphicon-pencil" ></span></a>';
-        $button .= '<a class="btn btn-default"  data-toggle="tooltip" title="'.gT("Question summary").'" href="'.$url.'" role="button"><span class="glyphicon glyphicon-list-alt" ></span></a>';
-
-        $oSurvey = Survey::model()->findByPk($this->sid);
-
-        if($oSurvey->active != "Y" && Permission::model()->hasSurveyPermission($this->sid,'surveycontent','delete' ))
-        {
-                $button .= '<a class="btn btn-default"  data-toggle="tooltip" title="'.gT("Delete").'" href="#" role="button"
-                            onclick="if (confirm(\' '.gT("Deleting  will also delete any answer options and subquestions it includes. Are you sure you want to continue?","js").' \' )){ '.convertGETtoPOST(Yii::app()->createUrl("admin/questions/sa/delete/surveyid/$this->sid/gid/$this->gid/qid/$this->qid")).'} ">
-                                <span class="text-danger glyphicon glyphicon-trash"></span>
-                            </a>';
-        }
-*/
-
+        $url = Yii::app()->createUrl("/admin/homepagesettings/sa/delete/id/");
+        $url .= '/'.$this->id;
+        $button .= '<a class="btn btn-default" href="'.$url.'" role="button" data-confirm="'.gT('Are you sure you want to delete this box ?').'"><span class="text-danger glyphicon glyphicon-trash" ></span></a>';
         return $button;
     }
 
+    /**
+     * List of all icons available for user
+     * Command to generate this list: grep -oh "icon-[a-z]*" styles/Sea_Green/css/fonts.css | sort -u > ~/my_icon_list.txt
+     * @return array
+     */
+    public function getIcons()
+    {
+        return array(
+            'icon-active',
+            'icon-add',
+            'icon-assessments',
+            'icon-browse',
+            'icon-conditions',
+            'icon-copy',
+            'icon-cpdb',
+            'icon-databack',
+            'icon-databegin',
+            'icon-dataend',
+            'icon-dataforward',
+            'icon-defaultanswers',
+            'icon-do',
+            'icon-edit',
+            'icon-emailtemplates',
+            'icon-expired',
+            'icon-export',
+            'icon-exportcsv',
+            'icon-exportr',
+            'icon-exportspss',
+            'icon-exportvv',
+            'icon-expression',
+            'icon-expressionmanagercheck',
+            'icon-global',
+            'icon-import',
+            'icon-importcsv',
+            'icon-importldap',
+            'icon-importvv',
+            'icon-inactive',
+            'icon-invite',
+            'icon-label',
+            'icon-labels',
+            'icon-list',
+            'icon-logout',
+            'icon-maximize',
+            'icon-minimize',
+            'icon-organize',
+            'icon-quota',
+            'icon-remind',
+            'icon-renumber',
+            'icon-resetsurveylogic',
+            'icon-responses',
+            'icon-saved',
+            'icon-security',
+            'icon-settings',
+            'icon-shield',
+            'icon-superadmin',
+            'icon-survey',
+            'icon-takeownership',
+            'icon-template',
+            'icon-templatepermissions',
+            'icon-templates',
+            'icon-tools',
+            'icon-user',
+            'icon-usergroup',
+            'icon-viewlast'
+        );
+    }
+
+    public function getIcons_length()
+    {
+        return count($this->icons);
+    }
 
     /**
      * Returns the static model of the specified AR class.

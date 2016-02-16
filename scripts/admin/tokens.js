@@ -1,9 +1,11 @@
-/*
-* Scroll the pager when scrolling horizontally
-*/
-$(window).scroll(function(){
-    $('.ui-jqgrid-pager').css({
-        'left': $(this).scrollLeft()
+/**
+ * Scroll the pager and the footer when scrolling horizontally
+ */
+$(document).ready(function(){
+    $('.scrolling-wrapper').scroll(function(){
+        $('#pager').css({
+            'left': $(this).scrollLeft() ,
+        });
     });
 });
 
@@ -95,23 +97,24 @@ $(document).ready(function() {
     // Code for AJAX download
     $(document).on("click",".addcondition-button",function(){
         conditionid++;
-        html = "<tr name='joincondition_"+conditionid+"' id='joincondition_"+conditionid+"'><td><select name='join_"+conditionid+"' id='join_"+conditionid+"'><option value='and'>"+andTxt+"</option><option value='or'>"+orTxt+"</option></td><td></td></tr><tr><td><select name='field_"+conditionid+"' id='field_"+conditionid+"'>\n";
+        html = "<tr name='joincondition_"+conditionid+"' id='joincondition_"+conditionid+"'><td><select class='form-control' name='join_"+conditionid+"' id='join_"+conditionid+"'><option value='and'>"+andTxt+"</option><option value='or'>"+orTxt+"</option></td><td></td></tr><tr><td><select class='form-control' name='field_"+conditionid+"' id='field_"+conditionid+"'>\n";
         for(col in colInformation){
             if(colInformation[col]['search'])
                 html += "<option value='"+col+"'>"+colInformation[col]['description']+"</option>";
         }
         html += "</select>\n\</td>\n\<td>\n\
-        <select name='condition_"+conditionid+"' id='condition_"+conditionid+"'>\n\
+        <select class='form-control' name='condition_"+conditionid+"' id='condition_"+conditionid+"'>\n\
         <option value='equal'>"+searchtypes[0]+"</option>\n\
         <option value='contains'>"+searchtypes[1]+"</option>\n\
         <option value='notequal'>"+searchtypes[2]+"</option>\n\
         <option value='notcontains'>"+searchtypes[3]+"</option>\n\
         <option value='greaterthan'>"+searchtypes[4]+"</option>\n\
         <option value='lessthan'>"+searchtypes[5]+"</option>\n\
-        </select></td>\n\<td><input type='text' id='conditiontext_"+conditionid+"' style='margin-left:10px;' /></td>\n\
-        <td><img src="+minusbutton+" onClick= $(this).parent().parent().remove();$('#joincondition_"+conditionid+"').remove() id='removebutton'"+conditionid+">\n\
-        <img src="+addbutton+" class='addcondition-button' style='margin-bottom:4px'></td></tr><tr></tr>";
+        </select></td>\n\<td><input class='form-control' type='text' id='conditiontext_"+conditionid+"' /></td>\n\
+        <td><span data-toggle='tooltip' title='" + sDelete + "' class='ui-pg-button glyphicon glyphicon-trash text-danger' onClick= $(this).parent().parent().remove();$('#joincondition_"+conditionid+"').remove() id='ui-icon removebutton'"+conditionid+"></span>\n\
+        <span data-toggle='tooltip' title='" + sAdd + "' class='ui-pg-button addcondition-button ui-icon text-success icon-add' style='margin-bottom:4px'></span></td></tr><tr></tr>";
         $('#searchtable tr:last').after(html);
+        $('[data-toggle="tooltip"]').tooltip()
     });
     if(typeof searchconditions === "undefined") {
         searchconditions = {};
@@ -136,14 +139,14 @@ $(document).ready(function() {
         colNames : colNames,
         colModel: colModels,
         height: "100%",
-        rowNum: 25,
+        rowNum: 10,
         editable:true,
         scrollOffset:0,
         sortable : true,
         sortname: 'tid',
         sortorder: 'asc',
         viewrecords : true,
-        rowList: [25,50,100,250,500,1000,2500,5000],
+        rowList: [10,25,50,100,250,500,1000,2500,5000],
         multiselect: true,
         beforeRequest : function(){
             $(this).addClass('load');
@@ -252,7 +255,7 @@ $(document).ready(function() {
         caption:"",
         title: sFind,
         buttonicon:'ui-icon-search',
-        onClickButton:function(){
+        onClickButton:function() {
             var dialog_buttons={};
             dialog_buttons[searchBtn]=function(){
                 searchconditions="";
@@ -323,6 +326,13 @@ $(document).ready(function() {
                 title : sFind,
                 buttons: dialog_buttons
             });
+
+            // Set class of buttons in search criteria pop-up
+            // Very hackish, but jQgrid is hard to adapt to bootstrap
+            $('.ui-dialog-buttonset').addClass('text-center');
+            $('.ui-dialog-buttonset button').wrap('<div class="col-sm-2"></div>');
+            $('.ui-dialog-buttonset button').addClass('form-control');
+            $('.ui-widget-content').has('#search').addClass('row');
         }
     });
     if(showInviteButton) {
@@ -435,6 +445,11 @@ $(document).ready(function() {
     $.jgrid.jqModal = $.extend($.jgrid.jqModal || {}, {
         beforeOpen: centerInfoDialog
     });
+
+    // jQgrid defaults to placement bottom, so we have to fix that
+    $('[data-toggle="tooltip"]').attr('data-placement', 'top');
+    $('[data-toggle="tooltip"]').tooltip()
+
 });
 
 function centerInfoDialog() {

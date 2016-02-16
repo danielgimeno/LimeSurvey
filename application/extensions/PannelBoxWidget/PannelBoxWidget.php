@@ -33,7 +33,7 @@
 
         public function getBoxes()
         {
-            $boxes = Boxes::model()->findAll();
+            $boxes = Boxes::model()->findAll(array('order' => 'position ASC'));
             return $boxes;
         }
 
@@ -63,7 +63,7 @@
          */
         protected function renderBox()
         {
-            if(Yii::app()->user->isInUserGroup($this->usergroup) || $this->usergroup == 0 || empty($this->usergroup) )
+            if ( self::canSeeBox())
             {
                 $offset = ($this->offset != '') ? 'col-sm-offset-1 col-lg-offset-'.$this->offset : '';
                 $this->render('box', array(
@@ -83,14 +83,22 @@
         protected function renderRows()
         {
             // We get all the boxes in the database
-            $boxes = Boxes::model()->findAll();
+            $boxes = self::getBoxes();
             $boxcount = 0;
             foreach($boxes as $box)
             {
-                $boxcount=$boxcount+1;
-                // It's the first box, we must display row header, and have an offset
-                if($boxcount == 1)
+
+                $canSeeBox = self::canSeeBox($box);
+                if( $canSeeBox )
                 {
+                    $boxcount=$boxcount+1;
+                }
+
+                // It's the first box to show, we must display row header, and have an offset
+                if($boxcount == 1 && $canSeeBox)
+                {
+
+
                     $this->render('row_header');
                     $bIsRowOpened = true;
                     $this->controller->widget('ext.PannelBoxWidget.PannelBoxWidget', array(
@@ -125,4 +133,54 @@
                 $this->render('row_footer');
             }
         }
+
+        protected function canSeeBox( $box='')
+        {
+            $box=($box=='')?$this:$box;
+            if ( $box->usergroup=='-1'  )
+            {
+                return true;
+            }
+            // If the usergroup is not set, or set to -2, only admin can see the box
+            elseif ( empty($box->usergroup) || $box->usergroup=='-2'  )
+            {
+                if(Permission::model()->hasGlobalPermission('superadmin','read') ? 1 : 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            // If usergroup is set to -3, nobody can see the box
+            elseif ( $usergroupid=='-3' )
+            {
+                return false;
+            }
+            // If usegroup is set and exist, if the user belong to it, he can see the box
+            else
+            {
+                $oUsergroup = UserGroup::model()->findByPk($box->usergroup);
+
+                // The group doesn't exist anymore, so only admin can see it
+                if(!is_object($oUsergroup))
+                {
+                    if(Permission::model()->hasGlobalPermission('superadmin','read') ? 1 : 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+                if(Yii::app()->user->isInUserGroup($box->usergroup))
+                {
+                    return true;
+                }
+            }
+        }
+
     }

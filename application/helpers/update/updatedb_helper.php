@@ -1327,7 +1327,7 @@ function db_upgrade_all($iOldDBVersion) {
 
         if ( $iOldDBVersion < 251 )
         {
-            upgradeSurveyTables251();
+            upgradeBoxesTable251();
 
             // Update DBVersion
             $oDB->createCommand()->update('{{settings_global}}',array('stg_value'=>251),"stg_name='DBVersion'");
@@ -1352,7 +1352,18 @@ function db_upgrade_all($iOldDBVersion) {
             // Update DBVersion
             $oDB->createCommand()->update('{{settings_global}}',array('stg_value'=>254),"stg_name='DBVersion'");
         }
-
+        if ( $iOldDBVersion < 255 )
+        {
+            upgradeSurveyTables255();
+            // Update DBVersion
+            $oDB->createCommand()->update('{{settings_global}}',array('stg_value'=>255),"stg_name='DBVersion'");
+        }
+        if ( $iOldDBVersion < 256 )
+        {
+            upgradeTokenTables256();
+            alterColumn('{{participants}}', 'email', "text", false);
+            $oDB->createCommand()->update('{{settings_global}}',array('stg_value'=>256),"stg_name='DBVersion'");
+        }
         $oTransaction->commit();
         // Activate schema caching
         $oDB->schemaCachingDuration=3600;
@@ -1379,6 +1390,91 @@ function db_upgrade_all($iOldDBVersion) {
     return true;
 }
 
+
+function upgradeTokenTables256()
+{
+    $surveyidresult = dbGetTablesLike("tokens%");
+    if ($surveyidresult)
+    {
+        foreach ( $surveyidresult as $sTableName )
+        {
+            alterColumn($sTableName, 'email', "text");
+            alterColumn($sTableName, 'firstname', "string(150)");
+            alterColumn($sTableName, 'lastname', "string(150)");
+        }
+    }
+}
+
+
+function upgradeSurveyTables255()
+{
+    // We delete all the old boxes, and reinsert new ones
+    Boxes::model()->deleteAll();
+
+    // Then we recreate them
+    $oDB = Yii::app()->db;
+    $oDB->createCommand()->insert('{{boxes}}', array(
+        'position' =>  '1',
+        'url'      => 'admin/survey/sa/newsurvey' ,
+        'title'    => 'Create survey' ,
+        'ico'      => 'add' ,
+        'desc'     => 'Create a new survey' ,
+        'page'     => 'welcome',
+        'usergroup' => '-2',
+    ));
+
+    $oDB->createCommand()->insert('{{boxes}}', array(
+        'position' =>  '2',
+        'url'      =>  'admin/survey/sa/listsurveys',
+        'title'    =>  'List surveys',
+        'ico'      =>  'list',
+        'desc'     =>  'List available surveys',
+        'page'     =>  'welcome',
+        'usergroup' => '-1',
+    ));
+
+    $oDB->createCommand()->insert('{{boxes}}', array(
+        'position' =>  '3',
+        'url'      =>  'admin/globalsettings',
+        'title'    =>  'Global settings',
+        'ico'      =>  'global',
+        'desc'     =>  'Edit global settings',
+        'page'     =>  'welcome',
+        'usergroup' => '-2',
+    ));
+
+    $oDB->createCommand()->insert('{{boxes}}', array(
+        'position' =>  '4',
+        'url'      =>  'admin/update',
+        'title'    =>  'ComfortUpdate',
+        'ico'      =>  'shield',
+        'desc'     =>  'Stay safe and up to date',
+        'page'     =>  'welcome',
+        'usergroup' => '-2',
+    ));
+
+    $oDB->createCommand()->insert('{{boxes}}', array(
+        'position' =>  '5',
+        'url'      =>  'admin/labels/sa/view',
+        'title'    =>  'Label sets',
+        'ico'      =>  'labels',
+        'desc'     =>  'Edit label sets',
+        'page'     =>  'welcome',
+        'usergroup' => '-2',
+    ));
+
+    $oDB->createCommand()->insert('{{boxes}}', array(
+        'position' =>  '6',
+        'url'      =>  'admin/templates/sa/view',
+        'title'    =>  'Template editor',
+        'ico'      =>  'templates',
+        'desc'     =>  'Edit LimeSurvey templates',
+        'page'     =>  'welcome',
+        'usergroup' => '-2',
+    ));
+
+}
+
 function upgradeSurveyTables254()
 {
     Yii::app()->db->createCommand()->dropColumn('{{boxes}}','img');
@@ -1403,40 +1499,22 @@ function upgradeSurveyTables253()
     }
 }
 
-function upgradeSurveyTables251()
+function upgradeBoxesTable251()
 {
     Yii::app()->db->createCommand()->addColumn('{{boxes}}','ico','string');
-
-    // add
-    $box = Boxes::model()->findByPk('1');
-    $box->ico = 'add';
-    $box->title= 'Create survey';
-    $box->save();
-
-    // list
-    $box = Boxes::model()->findByPk('2');
-    $box->ico = 'list';
-    $box->save();
-
-    //settings
-    $box = Boxes::model()->findByPk('3');
-    $box->ico = 'settings';
-    $box->save();
-
-    //shield
-    $box = Boxes::model()->findByPk('4');
-    $box->ico = 'shield';
-    $box->save();
-
-    //label
-    $box = Boxes::model()->findByPk('5');
-    $box->ico = 'label';
-    $box->save();
-
-    //templates
-    $box = Boxes::model()->findByPk('6');
-    $box->ico = 'templates';
-    $box->save();
+    Yii::app()->db->createCommand()->update('{{boxes}}',array('ico'=>'add',
+                                                              'title'=>'Create survey')
+                                                              ,"id=1");
+    Yii::app()->db->createCommand()->update('{{boxes}}',array('ico'=>'list')
+                                                              ,"id=2");
+    Yii::app()->db->createCommand()->update('{{boxes}}',array('ico'=>'settings')
+                                                              ,"id=3");
+    Yii::app()->db->createCommand()->update('{{boxes}}',array('ico'=>'shield')
+                                                              ,"id=4");
+    Yii::app()->db->createCommand()->update('{{boxes}}',array('ico'=>'label')
+                                                              ,"id=5");
+    Yii::app()->db->createCommand()->update('{{boxes}}',array('ico'=>'templates')
+                                                              ,"id=6");
 }
 
 /**
@@ -1458,7 +1536,7 @@ function createBoxes250()
     $oDB->createCommand()->insert('{{boxes}}', array(
         'position' =>  '1',
         'url'      => 'admin/survey/sa/newsurvey' ,
-        'title'    => 'Creates survey' ,
+        'title'    => 'Create survey' ,
         'img'      => 'add.png' ,
         'desc'     => 'Create a new survey' ,
         'page'     => 'welcome',

@@ -59,7 +59,105 @@ Thank you to everyone who helped with this new release!
 CHANGE LOG
 ------------------------------------------------------
 
-Changes from 2.06+ (build 160204) to 2.50+ (build 160206) Feb 6, 2016
+Changes from 2.50+ (build 160213) to 2.50+ (build 160215) Feb 15, 2016
+-Fixed issue #10411: Option 'Other' always visible (Olle Haerstedt)
+-Fixed issue #10415: Better design when validating expression in mail templates (Olle Haerstedt)
+-Fixed issue #10417: Installer does not create new database when it should (Denis Chenu)
+-Fixed issue #10418: Quotation marks are not rendered correctly in dropdowns in admin interface (Carsten Schmitz)
+-Fixed issue #10425: Error when resetting boxes (Carsten Schmitz)
+-Fixed issue #10426: Missing colon after strings (Carsten Schmitz)
+-Fixed issue #10427: Missing translation (Carsten Schmitz)
+-Fixed issue #10432: Inconsistent/wrong naming in question list (Carsten Schmitz)
+-Fixed issue #10441: Multiple short text question embeds subsequent question (Carsten Schmitz)
+-Fixed issue #10445: "Display responses" screen - pagination not visible (Olle Haerstedt)
+-Fixed issue #10446: "Display statistics" screen - debug information is displayed (Carsten Schmitz)
+-Fixed issue #6923: User can accidentally change certain survey settings after survey is already active (Carsten Schmitz)
+-Fixed issue: On/Off switches not translated (Carsten Schmitz)
+-Fixed issue: Question code not visible in statistics (Carsten Schmitz)
+-Fixed issue: Survey title column too narrow in surveylist (Carsten Schmitz)
+#Updated translation: Dutch by Han
+#Updated translation: Dutch (Informal) by Han
+#Updated translation: French (France) by DenisChenu, arnaud21, cestmoimeme
+#Updated translation: German by c_schmitz, actxcellence, cookiemonster
+#Updated translation: Italian by lfanfoni
+#Updated translation: Italian (Informal) by lfanfoni
+#Updated translation: Norwegian (Bokmal) by pmonstad
+#Updated translation: Norwegian (Nynorsk) by pmonstad
+
+Changes from 2.50+ (build 160212) to 2.50+ (build 160213) Feb 12, 2016
+-Fixed issue #10368: Missing translations (Carsten Schmitz)
+-Fixed issue #10382: Some buttons in ComfortUpdate not properly labeled when using French translation (Carsten Schmitz)
+-Fixed issue #10387: Token firstname and lastname field length too short (Carsten Schmitz)
+-Fixed issue #10397: Update fails from versions beofore 2.50 (Carsten Schmitz)
+-Fixed issue #10398: Stats on Global Settings Overview do not tie up with list under configuration drop down (Olle Haerstedt)
+-Fixed issue #10400: No plugin settings in survey (Olle Haerstedt)
+-Fixed issue #10402: Superadmin not seeing all surveys in survey list (Carsten Schmitz)
+-Fixed issue #10404: Missing translation on home page (Carsten Schmitz)
+-Fixed issue #10405: Missing tranlsation/tyop on front page (Carsten Schmitz)
+-Fixed issue #10408: Mix of two ways to select on/off yes/no when editing a question (Carsten Schmitz)
+-Fixed issue #10409: missing inline html-editor when editing mail templates (fix reset button position) (Olle Haerstedt)
+-Fixed issue #10412: Installer still partially unstyled (Olle Haerstedt)
+-Fixed issue : User with global read surveys permission don't see all surveys (Denis Chenu)
+#Updated translation: Norwegian (Bokmal) by pmonstad
+#Updated translation: Norwegian (Nynorsk) by pmonstad
+
+Changes from 2.50+ (build 160210) to 2.50+ (build 160212) Feb 12, 2016
+-Fixed issue #10325: Survey list respects user permissions (LouisGac)
+-Fixed issue #10358: Can search question with question group (LouisGac)
+-Fixed issue #10369: Break tokenify close button loop (LouisGac)
+-Fixed issue #10378: Correct display for 5point choice question (LouisGac)
+-Fixed issue #10385: Add condition button (LouisGac)
+-Fixed issue #10386: Possible again to to edit text of answer option in active survey (LouisGac)
+-Fixed issue #10388: Hide tip parameter for questions (LouisGac)
+-Fixed issue #10389: Animate emtip changes (LouisGac)
+-Fixed issue #9890: Broken survey can break admin page if debug is set (Denis Chenu)
+#Updated translation: Croatian by kmilojev, rovinj
+#Updated translation: Dutch by Han
+#Updated translation: Dutch (Informal) by Han
+#Updated translation: French (France) by arnaud21, tendanceh
+#Updated translation: German by actxcellence
+#Updated translation: German (Informal) by actxcellence
+#Updated translation: Greek by kiolalis
+#Updated translation: Japanese by nomoto
+#Updated translation: Norwegian (Bokmal) by pmonstad, peterhol
+#Updated translation: Norwegian (Nynorsk) by pmonstad
+#Updated translation: Polish by elisa
+#Updated translation: Polish (Informal) by elisa
+#Updated translation: Swedish by maxzomborszki
+
+Changes from 2.50+ (build 160206) to 2.50+ (build 160210) Feb 10, 2016
+-Fixed issue #10343: Fixed js variables for firefox (LouisGac)
+-Fixed issue #10286: Missing translations in plugin manager (Carsten Schmitz)
+-Fixed issue #10296: Problem with 0 equals empty string fixed (Olle Haerstedt)
+-Fixed issue #10305: Question and group (Denis Chenu)
+-Fixed issue #10308: Missing translation (Carsten Schmitz)
+-Fixed issue #10317: Glyphicons and/or font-awesome. (LouisGac)
+-Fixed issue #10318: Removed gecko hack (LouisGac)
+-Fixed issue #10320: Added width for survey summary table title (LouisGac)
+-Fixed issue #10321: Submit panel integration form when updating survey settings (Olle Haerstedt)
+-Fixed issue #10322: Boxes permission system (LouisGac)
+-Fixed issue #10326: Answer concatenation (LouisGac)
+-Fixed issue #10328: Use oTemplate->viewPath instead of getTemplatePath (Olle Haerstedt)
+-Fixed issue #10331: When installing : DB error don't show whole information (Denis Chenu)
+-Fixed issue #10333: Force width of htmleditor iframe (LouisGac)
+-Fixed issue #10336: No redirection after global setting saved (LouisGac)
+-Fixed issue #10337: Delete survey don't delete all user's settings (Denis Chenu)
+-Fixed issue #10339: Add icon and tooltip text to active but expired survey (Olle Haerstedt)
+-Fixed issue #10340: Remove search on SID to satisfy postgresql (LouisGac)
+-Fixed issue #10344: Added a link to create group from explorer (LouisGac)
+-Fixed issue #10344: Display quick actions when survey is new (LouisGac)
+-Fixed issue #10346: Removed default comment values for multiple text with comments (LouisGac)
+-Fixed issue #10346: Used $myfname2 insteas of $myfname (LouisGac)
+-Fixed issue #10349: Restored selectormodeclass none (LouisGac)
+-Fixed issue #10354: Add missing action variable (Olle Haerstedt)
+-Fixed issue #10362: Re-add position of question when adding it (Olle Haerstedt)
+-Fixed issue #10376: Data consistency check not done if url is set to get (Denis Chenu)
+-Fixed issue #9752: Sometimes it can be impossible to move a question after another one. (Denis Chenu)
+-Fixed issue: Old admin template or broken template are shown in admin list (Denis Chenu)
+-Fixed issue: Public survey list loads bootstrap even if template don't ask it (Denis Chenu)
+-New feature: Old template compatibility (Denis Chenu)
+
+Changes from 2.50+ (build 160204) to 2.50+ (build 160206) Feb 6, 2016
 -Fixed issue #10196: Superadmins should be able to edit participants without sharing (Olle Haerstedt)
 -Fixed issue #10201: Set sorttype to date, not string, for dates (Olle Haerstedt)
 -Fixed issue #10270: Open online manual in new tab (Olle Haerstedt)
@@ -80,7 +178,7 @@ Changes from 2.06+ (build 160204) to 2.50+ (build 160206) Feb 6, 2016
 #Updated translation: Polish by elisa
 #Updated translation: Polish (Informal) by elisa
 
-Changes from 2.06+ (build 160202) to 2.50+ (build 160204) Feb 4, 2016
+Changes from 2.50+ (build 160202) to 2.50+ (build 160204) Feb 4, 2016
 -Fixed issue #10242: Reordernig can be broken with some HTML in question (Denis Chenu)
 -Fixed issue #10244: Internal Server Error on RemoteControl add_survey call (Carsten Schmitz)
 -Fixed issue #10273: added . to $answer = (LouisGac)

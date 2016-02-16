@@ -1,18 +1,29 @@
 <?php
 /* @var $this BoxesController */
 /* @var $model Boxes */
-
-$this->breadcrumbs=array(
-	'Boxes'=>array('index'),
-	'Create',
-);
-
-$this->menu=array(
-	array('label'=>'List Boxes', 'url'=>array('index')),
-	array('label'=>'Manage Boxes', 'url'=>array('admin')),
-);
 ?>
+<div class="col-lg-12 list-surveys">
 
-<h1>Create Boxes</h1>
+    <?php $this->renderPartial('super/fullpagebar_view', array(
+        'fullpagebar' => array(
+            'saveandclosebutton' => array('form' => 'boxes-form'),
+            'closebutton' => array('url' => Yii::app()->createUrl('admin/homepagesettings'))
+        )
+    )); ?>
 
-<?php $this->renderPartial('_form', array('model'=>$model)); ?>
+    <h3><?php eT('New box');?></h3>
+
+    <div class="row">
+        <div class="col-lg-12 content-right">
+
+            <?php $this->renderPartial('homepagesettings/_form', array(
+                'model'=>$model,
+                'icons_length'=>$model->icons_length,
+                'icons'=>$model->icons,
+                'action'=>'create',
+            )); ?>
+
+        </div>
+    </div>
+
+</div>

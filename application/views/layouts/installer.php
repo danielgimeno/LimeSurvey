@@ -13,6 +13,8 @@
         App()->bootstrap->register();
         App()->getClientScript()->registerCssFile(App()->baseUrl . '/styles/Sea_Green/css/lime-admin.css');
         App()->getClientScript()->registerCssFile(App()->baseUrl . '/installer/css/main.css');
+        App()->getClientScript()->registerCssFile(App()->baseUrl . '/installer/css/fonts.css');
+        App()->getClientScript()->registerCssFile(App()->baseUrl . '/installer/css/font-awesome.css');
 
         $script = "$(function() {
         $('.on').animate({
