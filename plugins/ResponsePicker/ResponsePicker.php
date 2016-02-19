@@ -295,7 +295,7 @@
                     'template' => implode(' ', $template),
                     'buttons' => [
                         'view' => [
-                            'label' => '<i class="icon-eye-open"></i>',
+                            'label' => '<span class="inputbuttons-square glyphicon glyphicon-eye-open text-success"></span>',
                             'options' => [
                                 'title' => 'View data'
                             ],
@@ -305,7 +305,7 @@
                             }
                         ],
                         'update' => [
-                            'label' => '<i class="icon-pencil"></i>',
+                            'label' => '<span class="inputbuttons-square glyphicon glyphicon-pencil text-success"></span>',
                             'imageUrl' => false,
                             'options' => [
                                 'title' => 'Update data'
@@ -315,7 +315,7 @@
                             }
                         ],
                         'repeat' => [
-                            'label' => '<i class="icon-plus-sign"></i>',
+                            'label' => '<span class="inputbuttons-square glyphicon glyphicon-plus-sign text-success"></span>',
                             'imageUrl' => false,
                             'options' => [
                                 'title' => 'Create new response based on this one'
@@ -325,7 +325,7 @@
                             }
                         ],
                         'delete' => [
-                            'label' => '<i class="icon-trash"></i>',
+                            'label' => '<span class="inputbuttons-square glyphicon glyphicon-trash text-success"></span>',
                             'imageUrl' => false,
                             'options' => [
                                 'title' => 'Delete data'
@@ -433,8 +433,11 @@
 
 
             echo \CHtml::link($header, $new['url'], ['class' => 'btn']);
+            Yii::app()->bootstrap->register();
+            App()->getClientScript()->registerCssFile(App()->baseUrl . '/installer/css/fonts.css');
             \Yii::import('zii.widgets.grid.CGridView');
             \Yii::app()->params['bower-asset'] = \Yii::app()->assetManager->publish(__DIR__ . '/vendor/bower-asset');
+            //$cs->registerCssFile('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css');
             $cs->registerCss('select', implode("\n", [
                 'select { width: 100%; }',
                 'input[type=text] { height: 30px;}',
