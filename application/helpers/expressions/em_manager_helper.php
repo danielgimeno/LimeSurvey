@@ -57,7 +57,7 @@
         * sum of LEM_DEBUG constants - use bitwise AND comparisons to identify which parts to use
         * @var type
         */
-        private $debugLevel=2;
+        private $debugLevel=0;
          /**
         * sPreviewMode used for relevance equation force to 1 in preview mode
         * Maybe we can set it public
@@ -2615,7 +2615,7 @@
                                     $subqValidSelector = $sq['jsVarName_on'];
                                 case 'N': //NUMERICAL QUESTION TYPE
                                     $sq_name = ($this->sgqaNaming)?$sq['rowdivid'].".NAOK":$sq['varName'].".NAOK";
-                                    $sq_eqn = '( is_int('.$sq_name.') || is_empty('.$sq_name.') )';  //O
+                                    $sq_eqn = '( is_int('.$sq_name.') || is_empty('.$sq_name.') )';
                                     break;
                                 default:
                                     break;
@@ -5395,13 +5395,18 @@
                             break;
                         case 'N': //NUMERICAL QUESTION TYPE
                         case 'K': //MULTIPLE NUMERICAL QUESTION
-                            // @todo Validate a DECIMAL(30.10)
-                            if (trim($val)=='' || !is_numeric($val))
+                            if (trim($val)=='' || !is_numeric($val)) // is_numeric error is done by EM : then show an error and same page again
                             {
                                 $val=NULL;  // since some databases can't store blanks in numerical inputs
                             }
+                            elseif(!preg_match("/^(\d{1,20}\.\d{0,10}|\d{1,20})$/",$val)) // DECIMAL(30,10)
+                            {
+                                // Here : we must ADD a message for the user and set the question "not valid" : show the same page + show with input-error class
+                                $val=NULL;
+                            }
                             break;
                         default:
+                            // @todo : control length of DB string, if answers in single choice is valid too (for example) ?
                             break;
                     }
 
@@ -5423,11 +5428,19 @@
 
                     if (!dbExecuteAssoc($query))
                     {
-                        echo submitfailed('');  // TODO - report SQL error?
+                        // TODO: This kills the session if adminemail is defined, so the queries below won't work.
+                        $message = submitfailed('', $query);  // TODO - report SQL error?
 
                         if (($this->debugLevel & LEM_DEBUG_VALIDATION_SUMMARY) == LEM_DEBUG_VALIDATION_SUMMARY) {
                             $message .= $this->gT('Error in SQL update');  // TODO - add  SQL error?
                         }
+
+                        // TODO: Put this in a separate function, like EM::addFrontendFlashMessage()
+                        $originalPrefix = Yii::app()->user->getStateKeyPrefix();
+                        Yii::app()->user->setStateKeyPrefix('frontend');
+                        Yii::app()->user->setFlash('error', $message);
+                        Yii::app()->user->setStateKeyPrefix($originalPrefix);
+
                     }
                     // Save Timings if needed
                     elseif ($this->surveyOptions['savetimings']) {
@@ -8548,7 +8561,7 @@ EOD;
                             $value = preg_replace('|\,|', '', $value);
                         }
 
-                        switch($type) // fix value before trying to save in DB : date and numeric only
+                        switch($type) // fix value before set it in $_SESSION : the data is reset when show it again to user.trying to save in DB : date only, but think it must be leave like it and filter oinly when save in DB
                         {
                             case 'D': //DATE
                                 $value=trim($value);

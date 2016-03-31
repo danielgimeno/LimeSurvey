@@ -352,6 +352,8 @@ class SurveyRuntimeHelper {
         $sTemplatePath = $oTemplate->path;
         $sTemplateViewPath = $oTemplate->viewPath;
 
+        $flashmessage = makeFlashMessage();
+
         //$sTemplatePath=getTemplatePath(Yii::app()->getConfig("defaulttemplate")).DIRECTORY_SEPARATOR;
 
         // TODO : check if necessary :
@@ -719,6 +721,7 @@ class SurveyRuntimeHelper {
                     }
                     sendCacheHeaders();
                     doHeader();
+
 
                     echo templatereplace(file_get_contents($sTemplateViewPath."startpage.pstpl"), array(), $redata, 'SubmitStartpageI', false, NULL, array(), true );
 

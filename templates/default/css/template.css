@@ -660,7 +660,7 @@ input[type="checkbox"]:disabled:checked:after,
  */
 table.question.subquestion-list.questions-list th,table.question.subquestion-list.questions-list tr, table.subquestions-list th, table.subquestions-list td
 {
-    text-align: center;
+    text-align: left;
 }
 
 table.question.subquestion-list.questions-list tr.answers-list th
@@ -778,6 +778,68 @@ table {
     white-space: normal;
 }
 
+/* Center modal vertically, used by file-upload modal */
+.modal {
+    text-align: center;
+    padding: 0!important;
+}
+.modal:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -4px;
+}
+.modal-dialog {
+    display: inline-block;
+     text-align: left;
+     vertical-align: middle;
+}
+
+/* Make file upload modal fit to iframe */
+.file-upload-modal-body iframe {
+    height: inherit;
+    width: 100%;
+    border: none;
+}
+.file-upload-modal-body {
+    padding: 0;
+    height: 500px;
+}
+.file-upload-modal-footer {
+    margin-top: 0;
+}
+
+.slider.slider-horizontal {
+    width: 100%;
+
+    /* The reset button will be under the slider, so allow some margin */
+    margin-bottom: 1em;
+}
+
+/* When slider has both show-min-max and reset button, add space between
+ * left badge and reset button */
+.slider-min-badge {
+    margin-right: 1em;
+}
+
+.slider-left-span {
+    text-align: right;
+}
+
+.slider-right-span {
+    text-align: left;
+}
+
+.slider-container {
+    margin-top: 3.5em;
+    margin-bottom: 2.5em;
+}
+
+#yii-flash-message {
+    margin-top: 3em;
+}
+
 /**
  * No more tables
  * OBS: Media specific CSS should be last in this file.
@@ -840,6 +902,7 @@ table {
 
     .array-by-columns-div .answertext {
         padding: 8px;
+        padding-left: 0;
         text-align: left;
         font-weight: bold;
     }
@@ -932,6 +995,12 @@ table {
         padding-bottom: 0.5em;
     }
 
+    /* On phone, left and right slider text is above and below slider */
+    .slider-left-span {
+        text-align: left;
+    }
+
+
 }
 
 /** On small phones, leave some more space */
@@ -954,15 +1023,29 @@ table {
     .slider.slider-horizontal {
         /* Slider can be full width on phones */
         width: 100%;
-
-        /* The reset button will be under the slider on phones, so allow some margin */
-        margin-bottom: 1em;
     }
 
     /* Center label under radio button on phones */
     .five-point-choice label {
         margin-left: 5px;
     }
+
+    /* Make file-upload pop-up shorter on phones */
+    .file-upload-modal-body {
+        padding: 0;
+        height: 300px;
+    }
+
+    /* Modal should be in front of navbar, so the close icon is visible */
+    .modal {
+        z-index: 3000;
+    }
+
+    /* Less margin on phones */
+    .slider.slider-horizontal {
+        margin-bottom: 0.4em;
+    }
+
 
 }
 
@@ -973,34 +1056,3 @@ table {
     }
 }
 
-/* Center modal vertically, used by file-upload modal */
-.modal {
-    text-align: center;
-    padding: 0!important;
-}
-.modal:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -4px;
-}
-.modal-dialog {
-    display: inline-block;
-     text-align: left;
-     vertical-align: middle;
-}
-
-/* Make file upload modal fit to iframe */
-.file-upload-modal-body iframe {
-    height: inherit;
-    width: 100%;
-    border: none;
-}
-.file-upload-modal-body {
-    padding: 0;
-    height: 500px;
-}
-.file-upload-modal-footer {
-    margin-top: 0;
-}
