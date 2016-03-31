@@ -57,7 +57,7 @@
         * sum of LEM_DEBUG constants - use bitwise AND comparisons to identify which parts to use
         * @var type
         */
-        private $debugLevel=0;
+        private $debugLevel=2;
          /**
         * sPreviewMode used for relevance equation force to 1 in preview mode
         * Maybe we can set it public
@@ -2615,7 +2615,7 @@
                                     $subqValidSelector = $sq['jsVarName_on'];
                                 case 'N': //NUMERICAL QUESTION TYPE
                                     $sq_name = ($this->sgqaNaming)?$sq['rowdivid'].".NAOK":$sq['varName'].".NAOK";
-                                    $sq_eqn = 'is_int('.$sq_name.') || is_empty('.$sq_name.')';
+                                    $sq_eqn = '( is_int('.$sq_name.') || is_empty('.$sq_name.') )';  //O
                                     break;
                                 default:
                                     break;
@@ -8579,7 +8579,10 @@ EOD;
                                     $value = "";
                                 }
                                 else {
-                                    $value = sanitize_float($value);
+                                    $aAttributes=QuestionAttribute::model()->getQuestionAttributes($qid);
+                                    if ($aAttributes['num_value_int_only']!=1){
+                                        $value = sanitize_float($value);
+                                    }
                                 }
                                 break;
                             case '|': //File Upload
