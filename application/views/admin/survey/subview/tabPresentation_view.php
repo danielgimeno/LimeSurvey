@@ -223,6 +223,20 @@
                 ),
                 'current'=>$esrow['printanswers'],
             ),
+            'mailtoanswers'=>array(
+                'type'=>'select',
+                'label'=>gT("Enable mailto button to send answers?"),
+                'options'=>array(
+                    "Y"=>gT("Yes",'unescaped'),
+                    "N"=>gT("No",'unescaped'),
+                ),
+                'current'=>$esrow['mailtoanswers'],
+            ),
+            'mailtoanswerstarget'=>array(
+                'type'=>'string',
+                'label'=>gT("Target mail to receive answers"),
+                'current'=>$esrow['mailtoanswerstarget'],
+            ),            
             'publicstatistics'=>array(
                 'type'=>'select',
                 'label'=>gT("Public statistics?"),

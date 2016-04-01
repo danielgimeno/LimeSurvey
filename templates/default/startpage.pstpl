@@ -24,6 +24,45 @@
 	{TEMPLATEJS}
 <link rel="shortcut icon" href="{TEMPLATEURL}favicon.ico" />
 {GOOGLE_ANALYTICS_JAVASCRIPT}
+
+ <script>
+     function sendMail() {
+        var textoIntroductorio  = "Este es el texto introductorio del correo que se enviara al responsable de la encuesta. \
+Este es el texto introductorio del correo que se enviara al responsable de la encuesta. \
+Aqui voy a poner un pequeñoparrafo"+escape("\n")+
+"Este es el texto introductorio del correo que se enviara al responsable de la encuesta. \
+Este es el texto introductorio del correo que se enviara al responsable de la encuesta. \
+Este es el texto introductorio del correo que se enviara al responsable de la encuesta. "+escape("\n\n");
+
+
+        $myform = $('form');
+        var rows = $('.printouttable').children('tbody').children('tr');
+        var lines='';
+        $.each(rows, function( index, value ) {
+            var cols = $(this).children('td');
+           var  question = $(cols[0]).text();
+           if (question.trim()!='' && (typeof cols[1] === 'undefined')) {
+               question = question.toUpperCase();
+           } else
+           {
+               if (question.trim()!=''){
+                   question = escape("-")+question;
+               }
+           }
+           var answer = cols[1]?escape(":")+escape("\n")+' '+$(cols[1]).text():'';
+            lines = lines + question + answer+escape("\n"); 
+        });
+ 
+
+        $("strong").remove();
+        var mytitle = $('.printouttitle').text();
+        var titlesurvey = $('.printouttitle').html();
+
+        $myform.prop ('action','mailto:{MAILTOSENDANSWERS}?body='+textoIntroductorio+lines+'&subject=Respuestas a la encuesta: '+titlesurvey);
+        $myform.submit();
+     }
+ </script>
+
 </head>
 <body class="default lang-{SURVEYLANGUAGE} {SURVEYFORMAT}">
     <div class="outerframe">

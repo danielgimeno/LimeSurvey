@@ -34,6 +34,7 @@
         {
             Yii::app()->loadHelper("frontend");
             Yii::import('application.libraries.admin.pdf');
+            Yii::app()->getClientScript()->registerPackage('jqueryui');
 
             $iSurveyID = (int)$surveyid;
             $sExportType = $printableexport;
@@ -101,8 +102,10 @@
             //SHOW HEADER
             if ($sExportType != 'pdf')
             {
+                $mailtoanswers = $aSurveyInfo['mailtoanswers'];
+                $mailtobutton = ($mailtoanswers=='Y')?"<input id='exportbutton' title='Send answers by mail, you will need a local mail client' type='button' onclick='sendMail(); return false' value ='Send answers by email'  style='margin-right:20px'/>":'';
                 $sOutput = CHtml::form(array("printanswers/view/surveyid/{$iSurveyID}/printableexport/pdf"), 'post')
-                ."<center><input type='submit' value='".gT("PDF export")."'id=\"exportbutton\"/><input type='hidden' name='printableexport' /></center></form>";
+                ."<center>".$mailtobutton."<input type='submit' value='".gT("PDF export")."'id=\"exportbutton\"/><input type='hidden' name='printableexport' /></center></form>";
                 $sOutput .= "\t<div class='printouttitle'><strong>".gT("Survey name (ID):")."</strong> $sSurveyName ($iSurveyID)</div><p>&nbsp;\n";
                 LimeExpressionManager::StartProcessingPage(true);  // means that all variables are on the same page
                 // Since all data are loaded, and don't need JavaScript, pretend all from Group 1
@@ -142,6 +145,7 @@
                 }
                 $sOutput .= "</table>\n";
                 $sData['thissurvey']=$aSurveyInfo;
+                $mailtosendanswerstarget= $aSurveyInfo['mailtoanswerstarget']?$aSurveyInfo['mailtoanswerstarget']:Yii::app()->getConfig('mailtosendanswersTargetDefault');
                 $sOutput=templatereplace($sOutput, array() , $sData, '', $aSurveyInfo['anonymized']=="Y",NULL, array(), true);// Do a static replacement
                 ob_start(function($buffer, $phase) {
                     App()->getClientScript()->render($buffer);
@@ -152,7 +156,7 @@
 
                 sendCacheHeaders();
                 doHeader();
-                echo templatereplace(file_get_contents(getTemplatePath($sTemplate).'/startpage.pstpl'),array(),$sData);
+                echo templatereplace(file_get_contents(getTemplatePath($sTemplate).'/startpage.pstpl'),array('MAILTOSENDANSWERS'=>$mailtosendanswerstarget),$sData);
                 echo templatereplace(file_get_contents(getTemplatePath($sTemplate).'/printanswers.pstpl'),array('ANSWERTABLE'=>$sOutput),$sData);
                 echo templatereplace(file_get_contents(getTemplatePath($sTemplate).'/endpage.pstpl'),array(),$sData);
                 echo "</body></html>";

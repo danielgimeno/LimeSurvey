@@ -52,6 +52,7 @@ function templatereplace($line, $replacements = array(), &$redata = array(), $de
     'languagechanger',
     'loadname',
     'move',
+    'mailtosendanswers',
     'navigator',
     'percentcomplete',
     'privacy',
@@ -549,6 +550,7 @@ EOD;
     $coreReplacements['LOADHEADING'] = gT("Load a previously saved survey");
     $coreReplacements['LOADMESSAGE'] = gT("You can load a survey that you have previously saved from this screen.")."<br />".gT("Type in the 'name' you used to save the survey, and the password.")."<br />";
     $coreReplacements['NAVIGATOR'] = isset($navigator) ? $navigator : '';    // global
+    $coreReplacements['MAILTOSENDANSWERS'] = isset($mailtosendanswers) ? $mailtosendanswers : '';    // global    
     $coreReplacements['NOSURVEYID'] = (isset($surveylist))?$surveylist['nosid']:'';
     $coreReplacements['NUMBEROFQUESTIONS'] = $_totalquestionsAsked;
     $coreReplacements['PERCENTCOMPLETE'] = isset($percentcomplete) ? $percentcomplete : '';    // global

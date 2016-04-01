@@ -162,8 +162,10 @@ class SurveyAdmin extends Survey_Common_Action
 
         $esrow = array();
         $esrow = self::_fetchSurveyInfo('editsurvey', $iSurveyID);
+
         $aData['esrow'] = $esrow;
 
+        
         $aData = array_merge($aData, $this->_generalTabEditSurvey($iSurveyID, $esrow));
         $aData = array_merge($aData, $this->_tabPresentationNavigation($esrow));
         $aData = array_merge($aData, $this->_tabPublicationAccess($esrow));
@@ -1443,6 +1445,8 @@ class SurveyAdmin extends Survey_Common_Action
         $oSurvey->allowsave = App()->request->getPost('allowsave');
         $oSurvey->navigationdelay = App()->request->getPost('navigationdelay');
         $oSurvey->printanswers = App()->request->getPost('printanswers');
+        $oSurvey->mailtoanswers = App()->request->getPost('mailtoanswers');
+        $oSurvey->mailtoanswerstarget = App()->request->getPost('mailtoanswerstarget');
         $oSurvey->publicstatistics = App()->request->getPost('publicstatistics');
         $oSurvey->autoredirect = App()->request->getPost('autoredirect');
         $oSurvey->showxquestions = App()->request->getPost('showxquestions');
@@ -1625,6 +1629,8 @@ class SurveyAdmin extends Survey_Common_Action
             'nokeyboard' => App()->request->getPost('nokeyboard'),
             'showprogress' => App()->request->getPost('showprogress'),
             'printanswers' => App()->request->getPost('printanswers'),
+            'mailtoanswers' => App()->request->getPost('mailtoanswers'),
+            'mailtoanswerstarget' => App()->request->getPost('mailtoanswerstarget'),                
             'listpublic' => App()->request->getPost('public'),
             'htmlemail' => App()->request->getPost('htmlemail'),
             'sendconfirmation' => App()->request->getPost('sendconfirmation'),
