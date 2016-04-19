@@ -2809,6 +2809,7 @@ function do_multiplenumeric($ia)
 {
     global $thissurvey;
     $extraclass             = "";
+    $answertypeclass        = "numeric";
     $checkconditionFunction = "fixnum_checkconditions";
     $aQuestionAttributes    = QuestionAttribute::model()->getQuestionAttributes($ia[0]);
     $answer                 = '';
@@ -3053,7 +3054,7 @@ function do_multiplenumeric($ia)
             if (trim($aQuestionAttributes['num_value_int_only'])==1)
             {
                 $extraclass .=" integeronly";
-                $answertypeclass = " integeronly";
+                $answertypeclass .= " integeronly";
                 $integeronly=1;
             }
             else
