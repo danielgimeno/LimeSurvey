@@ -326,7 +326,7 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
 
                     // verify user binding
                     if (!$ldapbind) {
-                        $oEvent->set('success', false);
+                        $oEvent->set('success', FALSE);
                         $oEvent->set('error', gT("Incorrect Username and/or Password"));
                         ldap_close($ldapconn); // all done? close connection
 
@@ -456,10 +456,10 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
             echo (CHtml::tag('div', array('class' =>'Absolute-Center is-Responsive')));
             echo (CHtml::tag('div', array('class' =>'col-sm-12 col-md-12 col-md-offset-1')));
             echo (CHtml::tag('div', array(), CHtml::form(array("/survey/index","sid"=>$this->getEvent()->get('surveyId')), 'post', array('id'=>'tokenform', 'class'=>'form-horizontal col-sm-12', 'autocomplete'=>'off'))));
-            echo (CHtml::tag('div', array('class' => 'form-group input-group'), "<span class='input-group-addon'><i class='glyphicon glyphicon-user'></i></span></label>      <input class='form-control' id='tokenname' type='text' name='tokenname' placeholder='".gT("Token name")."'/>"));
-            echo (CHtml::tag('div', array('class' => 'form-group input-group'), "<span class='input-group-addon'><i class='glyphicon glyphicon-lock'></i></span></label><input class='form-control' type='password' name='tokenpassword' placeholder='".gT("Token password")."'/>"));
+            echo (CHtml::tag('div', array('class' => 'form-group input-group'), "<span class='input-group-addon'><i class='glyphicon glyphicon-user'></i></span></label>      <input class='form-control' id='tokenname' required=''  type='text' name='tokenname' placeholder='".gT("Token name")."'/>"));
+            echo (CHtml::tag('div', array('class' => 'form-group input-group'), "<span class='input-group-addon'><i class='glyphicon glyphicon-lock'></i></span></label><input class='form-control' type='password'  required=''  name='tokenpassword' placeholder='".gT("Token password")."'/>"));
             echo (CHtml::tag('div', array('class' => 'form-group'), "<input name='submit' id='submit' type='submit' size='40' maxlength='40' value='".gT("Start survey")."' class='btn btn-def btn-block' />"));
-            if ($this->getEvent()->get('success')=='false'){
+            if ($this->getEvent()->get('success') === false){
                 echo (CHtml::tag('div', array('class' =>'alert alert-danger'),$this->getEvent()->get('error')));
             }
             echo '</body></html>';
