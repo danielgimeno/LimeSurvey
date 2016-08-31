@@ -182,7 +182,11 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
         // If survey has not LDAP authentication ennabled Finish
         if ($this->get('bUseLdapTokenAuth', 'Survey', $iSurveyId) == false ) {
             $schemaFieldsName =Yii::app()->db->schema->getTable('{{tokens_' . $iSurveyId . '}}', true);
-            //Is an old LDAP user AVOID login
+            if (is_null($schemaFieldsName)){
+                // there's no token table support, return
+                return;
+            }
+            //Is an old LDAP user, AVOID login
             if (in_array('usernameldap', array_keys($schemaFieldsName->columns))){
                 if (isset($_SESSION['survey_'.$iSurveyId]['token']) || $request->getParam('token')!=''){
                   $udresult = Token::model($iSurveyId)->findAll("token = '$token'");
