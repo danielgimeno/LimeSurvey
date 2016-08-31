@@ -193,6 +193,7 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                     if (count($udresult)>0){
                         $oToken = $udresult[0];
                         if ($oToken->getAttribute('usernameldap')!=''){
+                            //the old user had AuthLdap login access but not now
                            Yii::app()->getController()->redirect(array('/'));
                         }
                     }
@@ -372,7 +373,6 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                         }
 
                         $cs =Yii::app()->db->schema->getTable('{{tokens_' . $iSurveyId . '}}', true);
-                        LimeExpressionManager::SetDirtyFlag();
 
                         $aData = array(
                             'firstname' => $tokenname,
@@ -392,6 +392,7 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
 
                         $token = Token::create($iSurveyId);
                         $token->setAttributes($aData, false);
+                        LimeExpressionManager::SetDirtyFlag();
                         $inresult = $token->save();
                     }
                     if (count($udresult) == 1){
