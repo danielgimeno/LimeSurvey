@@ -334,7 +334,7 @@ class index extends CAction {
                 $sLoadSecurity=Yii::app()->request->getPost('loadsecurity');
                 $captcha = Yii::app()->getController()->createAction('captcha');
                 $captchaCorrect = $captcha->validate( $sLoadsecurity, false);
-            
+
                 if(empty($sLoadSecurity))
                 {
                     $errormsg .= gT("You did not answer to the security question.")."<br />\n";
@@ -571,7 +571,8 @@ class index extends CAction {
                             // If the response was completed and user is allowed to edit after completion start at the beginning and not at the last page - just makes more sense
                             if (!($oResponse->submitdate && $thissurvey['alloweditaftercompletion'] == 'Y'))
                             {
-                                $_SESSION['survey_'.$surveyid]['step'] = $oResponse->lastpage;
+                                //$_SESSION['survey_'.$surveyid]['step'] = $oResponse->lastpage-1;
+                                $_SESSION['survey_'.$surveyid]['step'] = 1;
                             }
                         }
                         buildsurveysession($surveyid);
