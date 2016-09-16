@@ -360,14 +360,8 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                         $newTokenPassword = \Yii::app()->securityManager->generateRandomString(10);
                         $schemaFieldsName =Yii::app()->db->schema->getTable('{{tokens_' . $iSurveyId . '}}', true);
                         LimeExpressionManager::SetDirtyFlag();
-                        $tokenattributefieldnames = getAttributeFieldNames($iSurveyId);
 
-//                        $i = 1;
-//                        while (in_array('attribute_' . $i, $tokenattributefieldnames) !== false)
-//                        {
-//                            $i++;
-//                        }
-//                        $tokenattributefieldnames[] = 'attribute_' . $i;
+
                         if (!in_array('usernameldap', array_keys($schemaFieldsName->columns))){
                             Yii::app()->db->createCommand(Yii::app()->db->getSchema()->addColumn("{{tokens_".intval($iSurveyId)."}}", 'usernameldap' , 'string(255)'))->execute();
                         }
@@ -531,6 +525,15 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
         foreach ($event->get('settings') as $name => $value)
         {
             $this->set($name, $value, 'Survey', $event->get('survey'));
+            $iSurveyId = $event->get('survey');
+            if ($name=='bUseLdapTokenAuth' && $value==1){
+                if (tableExists('{{tokens_'.$iSurveyId.'}}')){
+                    $schemaFieldsName =Yii::app()->db->schema->getTable('{{tokens_' . $iSurveyId . '}}', true);
+                    if (!in_array('usernameldap', array_keys($schemaFieldsName->columns))){
+                        Yii::app()->db->createCommand(Yii::app()->db->getSchema()->addColumn("{{tokens_".intval($iSurveyId)."}}", 'usernameldap' , 'string(255)'))->execute();
+                    }
+                }
+            }
         }
     }
 
