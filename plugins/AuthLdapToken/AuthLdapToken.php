@@ -174,8 +174,8 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
         $thissurvey = getSurveyInfo($iSurveyId);
         $request = $this->api->getRequest();
 
-        // If Survey is anonymous finish
-        if ($thissurvey['anonymized'] == "Y")  {
+        // If Survey is anonymous finish or table tokens_$iSurveyId does not exist return
+        if ($thissurvey['anonymized'] == "Y" || !tableExists('{{tokens_' . $iSurveyId . '}}')) {
             return;
         }
 
@@ -287,7 +287,6 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                             $ldapbindsearch = @ldap_bind($ldapconn, $binddn, $bindpwd);
                         }
                         if (!$ldapbindsearch) {
-                            $this->setAuthFailure(100, ldap_error($ldapconn));
                             $oEvent->set('error', gT("LDAP search has not given any results"));
                             ldap_close($ldapconn); // all done? close connection
                             return;
@@ -318,9 +317,8 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                             // if no entry or more than one entry returned
                             // then deny authentication
                             $oEvent->set('success', false);
-                            $oEvent->set('error', gT("No Results found, incorrect Username and/or Password"));
+                            $oEvent->set('error', gT("Incorrect Username and/or Password"));
                             ldap_close($ldapconn); // all done? close connection
-                            ///Yii::app()->getController()->redirect(array('/'.$iSurveyId));
                             $this->renderHtml();
                             return;
                         }
@@ -348,13 +346,9 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                         $oEvent->set('error', 'Survey not active');
                         return;
                     } else {
-                      //$udresult = Token::model($iSurveyId)->findAll("firstname = '$tokenname' and token <> '' and token = '$tokenpassword'");
-                        $schemaFieldsName =Yii::app()->db->schema->getTable('{{tokens_' . $iSurveyId . '}}', true);
-                        if (in_array('firstname', array_keys($schemaFieldsName->columns))){
-                            // We assume that the name is unique
-                            //$udresult = Token::model($iSurveyId)->findAll("firstname = '$tokenname' AND ldaptokenpassword= '".sha1($tokenpassword)."'");
-                            $udresult = Token::model($iSurveyId)->findAll("firstname = '$tokenname'");
-                        }
+                        //$udresult = Token::model($iSurveyId)->findAll("firstname = '$tokenname' and token <> '' and token = '$tokenpassword'");
+                        // We assume that the name is unique
+                        $udresult = Token::model($iSurveyId)->findAll("firstname = '$tokenname'");
                     }
                     if (count($udresult) == 0){
                         $newTokenPassword = \Yii::app()->securityManager->generateRandomString(10);
@@ -522,15 +516,18 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
     public function newSurveySettings()
     {
         $event = $this->getEvent();
-        foreach ($event->get('settings') as $name => $value)
-        {
-            $this->set($name, $value, 'Survey', $event->get('survey'));
-            $iSurveyId = $event->get('survey');
-            if ($name=='bUseLdapTokenAuth' && $value==1){
-                if (tableExists('{{tokens_'.$iSurveyId.'}}')){
-                    $schemaFieldsName =Yii::app()->db->schema->getTable('{{tokens_' . $iSurveyId . '}}', true);
-                    if (!in_array('usernameldap', array_keys($schemaFieldsName->columns))){
-                        Yii::app()->db->createCommand(Yii::app()->db->getSchema()->addColumn("{{tokens_".intval($iSurveyId)."}}", 'usernameldap' , 'string(255)'))->execute();
+        $settingsPlugin = $event->get('settings');
+        if (!is_null($settingsPlugin) and is_array($settingsPlugin) and count($settingsPlugin)>0) {
+            foreach ($settingsPlugin as $name => $value)
+            {
+                $this->set($name, $value, 'Survey', $event->get('survey'));
+                $iSurveyId = $event->get('survey');
+                if ($name=='bUseLdapTokenAuth' && $value==1){
+                    if (tableExists('{{tokens_'.$iSurveyId.'}}')){
+                        $schemaFieldsName =Yii::app()->db->schema->getTable('{{tokens_' . $iSurveyId . '}}', true);
+                        if (!in_array('usernameldap', array_keys($schemaFieldsName->columns))){
+                            Yii::app()->db->createCommand(Yii::app()->db->getSchema()->addColumn("{{tokens_".intval($iSurveyId)."}}", 'usernameldap' , 'string(255)'))->execute();
+                        }
                     }
                 }
             }
