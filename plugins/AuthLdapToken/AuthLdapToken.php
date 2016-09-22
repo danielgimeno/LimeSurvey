@@ -218,7 +218,8 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
         if (($tokenname=='' || $tokenpassword=='')) {
             // collect login data
               unset($_SESSION['survey_'.$iSurveyId]['srid']);
-               unset($_SESSION['survey_'.$iSurveyId]['step']);
+              unset($_SESSION['survey_'.$iSurveyId]['step']);
+              unset($_SESSION['ResponsePicker']);
             $this->renderHtml();
         }
         else {
@@ -388,6 +389,13 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                         $oToken = $udresult[0];
                         $newTokenPassword = $oToken->getAttribute('token');
 
+                        if ($oToken->getAttribute('usernameldap')==''){
+                            $aData = array(
+                                'usernameldap' => $givenname
+                            );
+                            $oToken->setAttributes($aData, false);
+                            $oToken->save();
+                        }
                     }
 
                     $aData['success'] = true;
@@ -401,7 +409,7 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                     $_SESSION['survey_'.$iSurveyId]['token'] = $clienttoken;
                     $_SESSION['survey_'.$iSurveyId]['tokenname'] = $tokenname;
                     $_SESSION['survey_'.$iSurveyId]['tokenpassword'] = $newTokenPassword;
-                    ldap_close($ldapconn); // Close connection
+                     ldap_close($ldapconn); // Close connection
 
                 }
             }

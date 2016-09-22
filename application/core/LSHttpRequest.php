@@ -35,7 +35,7 @@ class LSHttpRequest extends CHttpRequest
 {
 
     private $_pathInfo;
-    
+
     public $noCsrfValidationRoutes = array();
 
     /**
@@ -95,7 +95,7 @@ class LSHttpRequest extends CHttpRequest
             {
                 $referrer = $sAlternativeUrl;
             }
-            else 
+            else
             {
                return App()->createUrl('admin/index');
             }
@@ -128,11 +128,12 @@ class LSHttpRequest extends CHttpRequest
     /**
     * Method to check if an url is part of the stack
     * Returns true, when an url is saved in the stack
-    * @param $referrerURL The URL that is checked against the stack 
+    * @param $referrerURL The URL that is checked against the stack
     */
     protected function checkLoopInNavigationStack($referrerURL)
     {
         $navStack = App()->session['LSNAVSTACK'];
+        if (is_array($navStack) && count($navStack)>0 )
         foreach($navStack as $url)
         {
             $refEqualsUrl = ($referrerURL == $url);
@@ -141,7 +142,7 @@ class LSHttpRequest extends CHttpRequest
                   return true;
               }
         }
-        return false;  
+        return false;
     }
 
     protected function normalizeRequest(){
