@@ -142,6 +142,7 @@
             else
             {
                 if (isset($_SESSION['ResponsePicker']) || $request->getParam('ResponsePicker')!='')
+                //if ($request->getParam('ResponsePicker')!='')
                 {
 
                     $choice = isset($_SESSION['ResponsePicker'])?$_SESSION['ResponsePicker']:$request->getParam('ResponsePicker');

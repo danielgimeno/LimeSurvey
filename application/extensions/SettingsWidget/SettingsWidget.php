@@ -253,12 +253,12 @@ class SettingsWidget extends CWidget
         $metaData = array_merge($defaults, $metaData);
 
         // col-sm-X is here for bootsrap 3 when ready
-        $metaData['labelOptions']['class'].=" control-label col-sm-5";
+        $metaData['labelOptions']['class'].=" control-label col-sm-7";
         // Set the witdth of control-option according to existence of label
         if(!isset($metaData['label']))
             $metaData['controlOptions']['class'].=" col-sm-12";
         else
-            $metaData['controlOptions']['class'].=" col-sm-7";
+            $metaData['controlOptions']['class'].=" col-sm-5";
         $metaData['controlOptions']['class'].=" controls";
 
         if (is_string($metaData['class']))

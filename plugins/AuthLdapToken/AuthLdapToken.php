@@ -33,13 +33,13 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
             'label' => 'Port number',
             'help' => 'Default when omitted is 389',
             ),
-        'ldapversion' => array(
+/*        'ldapversion' => array(
             'type' => 'select',
             'label' => 'LDAP version',
             'options' => array('2' => 'LDAPv2', '3'  => 'LDAPv3'),
             'default' => '2',
             'submitonchange'=> true
-            ),
+            ),*/
         'ldapoptreferrals' => array(
             'type' => 'boolean',
             'label' => 'Select true if referrals must be followed (use false for ActiveDirectory)',
@@ -95,14 +95,6 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
         'fullnameattribute' => array(
                 'type' => 'string',
                 'label' => 'LDAP attribute of full name'
-                ),
-        'is_default' => array(
-                'type' => 'checkbox',
-                'label' => 'Check to make default authentication method'
-                ),
-        'autocreate' => array(
-                'type' => 'checkbox',
-                'label' => 'Automatically create participant if it exists in LDAP server'
                 ),
         'validFrom' => array(
                 'type' => 'string',
