@@ -1,0 +1,71 @@
+.dataTables_wrapper {
+	overflow-x: scroll;
+	padding-bottom: 16px;
+	padding-right: 15px;
+}
+
+table.dataTable tbody tr.selected {
+	background-color: #B0BED9;
+}
+table.dataTable tbody tr.selected td.sorting_1 {
+	background-color: #B0BED9;
+}
+
+table.dataTable thead th.sorting_disabled {
+	cursor: default;
+}
+
+/*.controls .datatable-view:first-child {
+	margin-left: -180px;
+}*/
+
+.filters input {
+	width: 100%;
+}
+
+table.dataTable .nowrap {
+	white-space: nowrap;
+}
+
+table.dataTable thead tr.filters th {
+    padding: 2px;
+}
+
+table.dataTable thead th, table.dataTable thead td {
+	padding: 5px 18px 5px 10px;
+}
+table.dataTable thead th.sorting_disabled, table.dataTable thead td.sorting_disabled {
+	padding: 5px 10px 5px 10px;
+}
+
+.datatable-view {
+	display: block;
+}
+
+.error .datatable-view{
+	border: 1px solid #b94a48;
+}
+
+.success .datatable-view {
+	border: 1px solid #468847;
+}
+
+/**
+ Fix for datatables in form.
+*/
+form .controls:only-child {
+	margin-left: 0px;
+}
+
+form .controls:only-child label.checkbox{
+	margin-left: 180px;
+}
+
+.control-group.success .dataTables_wrapper select,
+.control-group.error .dataTables_wrapper select,
+.control-group.success .dataTables_wrapper input,
+.control-group.error .dataTables_wrapper input
+{
+	border-color: #cccccc;
+	color: #555555;
+}
