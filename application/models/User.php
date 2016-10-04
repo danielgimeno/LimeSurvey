@@ -503,4 +503,51 @@ class User extends LSActiveRecord
         ));
     }
 
+    /**
+    * Returns Users from string id list
+    *
+    * @access public
+    * @return array User list
+    */
+    public static function getArrayUsers($stringUsersList, $outputformat='fullinfoarray')
+    {
+        if (!empty(Yii::app()->session['loginID']))
+        {
+            $myuid=sanitize_int(Yii::app()->session['loginID']);
+        }
+        if (Permission::model()->hasGlobalPermission('superadmin','read') )
+        {
+            if (isset($myuid))
+            {
+                $sDatabaseType = Yii::app()->db->getDriverName();
+                $uresult = Yii::app()->db->createCommand()
+                    ->select('users_name,uid,email,full_name,parent_id')
+                    ->from('{{users}} u')
+                    ->where(array('in', 'uid', explode (',',$stringUsersList)))
+                    ->queryAll();
+            }
+            else
+            {
+                return array(); // Or die maybe
+            }
+        }
+        else
+        {
+            return array(); // Or die maybe
+        }
+        $userlist = array();
+        foreach ($uresult as $srow)
+        {
+            if ($outputformat != 'onlyuidarray')
+            {
+                $userlist[] = array("user"=>$srow['users_name'], "uid"=>$srow['uid'], "email"=>$srow['email'], "full_name"=>$srow['full_name'], "parent_id"=>$srow['parent_id'] );
+            }
+            else
+            {
+                $userlist[] = $srow['uid'];
+            }
+        }
+        return $userlist;
+    }
+
 }
