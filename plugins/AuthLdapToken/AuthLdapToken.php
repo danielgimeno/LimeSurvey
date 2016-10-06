@@ -291,7 +291,7 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                         }
                         else
                         {
-                            $usersearchfilter = "($fullnameattribute=$tokenname)";
+                            $usersearchfilter = "($searchuserattribute=$tokenname)";
                         }
 
                         //$dnsearchres = ldap_search($ldapconn, $usersearchbase, $usersearchfilter, array($searchuserattribute));
@@ -303,7 +303,7 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                             $tokenEntry=ldap_get_entries($ldapconn, $dnsearchres);
                             $tokenDn = $tokenEntry[0]["dn"]?$tokenEntry[0]["dn"]:'';
                             $tokenEmail = isset($tokenEntry[0]["mail"][0])?$tokenEntry[0]["mail"][0]:'';
-                            $givenname = isset ($tokenEntry[0]["givenname"][0])?$tokenEntry[0]["givenname"][0]:'';
+                            $givenname = isset ($tokenEntry[0]["name"][0])?$tokenEntry[0]["name"][0]:'';
                         }
                         else
                         {
@@ -315,7 +315,7 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                             $this->renderHtml();
                             return;
                         }
-                        $tokenDn = 'uid=' . $tokenname . "," . $usersearchbase;
+                        //$tokenDn = 'uid=' . $tokenname . "," . $usersearchbase;
                         // binding to ldap server with the userDN and privided credentials
                         $ldapbind = @ldap_bind($ldapconn, $tokenDn, $tokenpassword);
                     }
@@ -366,8 +366,8 @@ class AuthLdapToken extends ls\pluginmanager\AuthPluginBase
                             'remindersent' => 'N',
                             'completed' => 'N',
                             'usesleft' => 100,
-                            'validfrom' => $validFrom,
-                            'validuntil' => $validUntil,
+                            //'validfrom' => $validFrom,
+                            //'validuntil' => $validUntil,
                             'usernameldap' => $givenname
                         );
 
